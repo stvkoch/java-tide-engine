@@ -42,10 +42,12 @@ public class BackEndTideComputer
   
   public final static DecimalFormat DF22 = new DecimalFormat("#0.00");
   
-  private final static String METERS        = "meters";
-  private final static String FEET          = "feet";
-  private final static String KNOTS         = "knots";
-  private final static String SQUARE_KNOTS  = "knots^2";
+  public final static String METERS        = "meters";
+  public final static String FEET          = "feet";
+  public final static String KNOTS         = "knots";
+  public final static String SQUARE_KNOTS  = "knots^2";
+  
+  private final static double FEET_2_METERS = 0.30480061d;
   
   private static DOMParser parser = new DOMParser();
   private static boolean verbose = false;
@@ -460,6 +462,11 @@ public class BackEndTideComputer
 
   public static TideStation findTideStation(String stationName, int year, XMLDocument constituents) throws Exception
   {
+    return findTideStation(stationName, year, constituents, STATION_FILE);
+  }
+  
+  public static TideStation findTideStation(String stationName, int year, XMLDocument constituents, String stationFile) throws Exception
+  {
     TideStation ts = null;
     long before = System.currentTimeMillis();
     StationFinder sf = new StationFinder();
@@ -469,7 +476,7 @@ public class BackEndTideComputer
       SAXParser saxParser = factory.newSAXParser();
       
       sf.setStationName(stationName);
-      InputSource is = new InputSource(new FileInputStream(new File(STATION_FILE)));
+      InputSource is = new InputSource(new FileInputStream(new File(stationFile)));
       is.setEncoding("ISO-8859-1");
       saxParser.parse(is, sf);       
     }
@@ -557,7 +564,24 @@ public class BackEndTideComputer
   {
     BackEndTideComputer.verbose = verbose;
   }
-
+  
+  public static double getWaterHeightIn(double d, TideStation ts, String unit)
+  {
+    double val = d;
+    if (ts.isCurrentStation())
+      throw new RuntimeException(ts.getFullName()+" is a current station. Method getWaterHeightIn applies only to tide stations.");
+    if (!unit.equals(ts.getUnit()))
+    {
+      if (!unit.equals(METERS) && !unit.equals(FEET))
+        throw new RuntimeException("Unsupported unit [" + unit +"]. Only " + METERS + " or " + FEET + " please.");
+      if (unit.equals(METERS) && ts.getUnit().equals(FEET))
+        val *= FEET_2_METERS;
+      else
+        val /= FEET_2_METERS;
+    }
+    return val;
+  }
+  
   public static class StationFinder extends DefaultHandler
   {
     private String stationName = "";

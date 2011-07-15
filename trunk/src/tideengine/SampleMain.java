@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 
 import java.util.TimeZone;
@@ -49,6 +50,8 @@ public class SampleMain
         System.out.println("At " + location + " in " + now.get(Calendar.YEAR) + ", min : " + BackEndTideComputer.DF22.format(mm[BackEndTideComputer.MIN_POS]) + " " + ts.getUnit() + ", max : " + BackEndTideComputer.DF22.format(mm[BackEndTideComputer.MAX_POS]) + " " + ts.getDisplayUnit());
         double wh = BackEndTideComputer.getWaterHeight(ts, constSpeed, now);
         System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + BackEndTideComputer.DF22.format(wh) + " " + ts.getDisplayUnit());
+        if (ts.isTideStation())
+          System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + BackEndTideComputer.DF22.format(BackEndTideComputer.getWaterHeightIn(wh, ts, BackEndTideComputer.METERS)) + " " + BackEndTideComputer.METERS);
       }
 
       location = "Fare Ute";
@@ -115,7 +118,7 @@ public class SampleMain
    // ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR), constituents);
       if (ts != null)
       {
-        TimeZone tz = TimeZone.getDefault();
+     // TimeZone tz = TimeZone.getDefault();
         System.out.println("Date;Height (ft)");
         before = System.currentTimeMillis();
         for (int h=0; h<24; h++)
@@ -227,21 +230,57 @@ public class SampleMain
         after = System.currentTimeMillis();
         System.out.println("High-Low water Calculation took " + Long.toString(after - before) + " ms");
         System.out.println("-- " + location + " --");
-        if (low1Cal != null && high1Cal != null && low1Cal.compareTo(high1Cal) < 0)
-        {
-          if (low1Cal != null) System.out.println("LW " + low1Cal.getTime().toString() + " : " + BackEndTideComputer.DF22.format(low1) + " " + ts.getDisplayUnit());
-          if (high1Cal != null) System.out.println("HW " + high1Cal.getTime().toString() + " : " + BackEndTideComputer.DF22.format(high1) + " " + ts.getDisplayUnit());
-          if (low2Cal != null) System.out.println("LW " + low2Cal.getTime().toString() + " : " + BackEndTideComputer.DF22.format(low2) + " " + ts.getDisplayUnit());
-          if (high2Cal != null) System.out.println("HW " + high2Cal.getTime().toString() + " : " + BackEndTideComputer.DF22.format(high2) + " " + ts.getDisplayUnit());
-        }
-        else
-        {
-          if (high1Cal != null) System.out.println("HW " + high1Cal.getTime().toString() + " : " + BackEndTideComputer.DF22.format(high1) + " " + ts.getDisplayUnit());
-          if (low1Cal != null) System.out.println("LW " + low1Cal.getTime().toString() + " : " + BackEndTideComputer.DF22.format(low1) + " " + ts.getDisplayUnit());
-          if (high2Cal != null) System.out.println("HW " + high2Cal.getTime().toString() + " : " + BackEndTideComputer.DF22.format(high2) + " " + ts.getDisplayUnit());
-          if (low2Cal != null) System.out.println("LW " + low2Cal.getTime().toString() + " : " + BackEndTideComputer.DF22.format(low2) + " " + ts.getDisplayUnit());
-        }
+
+        ArrayList<TimedValue> timeAL = new ArrayList<TimedValue>(4);
+        if (low1Cal != null)
+          timeAL.add(new TimedValue("LW", low1Cal, low1));
+        if (low2Cal != null)
+          timeAL.add(new TimedValue("LW", low2Cal, low2));
+        if (high1Cal != null)
+          timeAL.add(new TimedValue("HW", high1Cal, high1));
+        if (high2Cal != null)
+          timeAL.add(new TimedValue("HW", high2Cal, high2));
+        
+        Collections.sort(timeAL);
+        
+        for (TimedValue tv : timeAL)
+          System.out.println(tv.getType() + " " + tv.getCalendar().getTime().toString() + " : " + BackEndTideComputer.DF22.format(tv.getValue()) + " " + ts.getDisplayUnit());
+
       }
+    }
+  }
+  
+  private static class TimedValue implements Comparable<TimedValue>
+  {
+    private Calendar cal;
+    private double   value;
+    private String   type = "";
+    
+    public TimedValue(String type, Calendar cal, double d)
+    {
+      this.type = type;
+      this.cal = cal;
+      this.value = d;
+    }
+    
+    public int compareTo(TimedValue tv)
+    {
+      return this.cal.compareTo(tv.getCalendar());
+    }
+
+    public Calendar getCalendar()
+    {
+      return cal;
+    }
+
+    public double getValue()
+    {
+      return value;
+    }
+
+    public String getType()
+    {
+      return type;
     }
   }
 }
