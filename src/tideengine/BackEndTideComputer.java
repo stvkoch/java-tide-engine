@@ -47,7 +47,7 @@ public class BackEndTideComputer
   public final static String KNOTS         = "knots";
   public final static String SQUARE_KNOTS  = "knots^2";
   
-  private final static double FEET_2_METERS = 0.30480061d;
+  private final static double FEET_2_METERS = 0.30480061d; // US feet to meters
   
   private static DOMParser parser = new DOMParser();
   private static boolean verbose = false;
