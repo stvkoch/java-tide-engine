@@ -586,10 +586,20 @@ public class BackEndTideComputer
   {
     private String stationName = "";
     private TideStation ts = null;
+    private ArrayList<TideStation> stationArrayList = null;
     
     public void setStationName(String sn)
     {
       this.stationName = sn;
+    }
+    
+    public StationFinder()
+    {
+    }
+
+    public StationFinder(ArrayList<TideStation> al)
+    {
+      this.stationArrayList = al;
     }
     
     public TideStation getTideStation()
@@ -664,7 +674,10 @@ public class BackEndTideComputer
       if (foundStation && "station".equals(qName))
       {
         foundStation = false;
-        throw new DoneWithSiteException("Done with it.");
+        if (stationArrayList == null)
+          throw new DoneWithSiteException("Done with it.");
+        else
+          stationArrayList.add(ts);
       }
       else if (foundNameCollection && "name-collection".equals(qName))
       {
