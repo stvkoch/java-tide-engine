@@ -20,6 +20,10 @@ public class Utilities
   
   public static TreeMap<String, StationTreeNode> buildStationTree()
   {
+    return buildStationTree(BackEndTideComputer.STATION_FILE);
+  }
+  public static TreeMap<String, StationTreeNode> buildStationTree(String stationFileName)
+  {
     TreeMap<String, StationTreeNode> set = new TreeMap<String, StationTreeNode>();
     
     long before = System.currentTimeMillis();
@@ -31,7 +35,7 @@ public class Utilities
       
       sf.setTreeToPopulate(set);
       
-      InputSource is = new InputSource(new FileInputStream(new File(BackEndTideComputer.STATION_FILE)));
+      InputSource is = new InputSource(new FileInputStream(new File(stationFileName)));
       is.setEncoding("ISO-8859-1");
       saxParser.parse(is, sf);       
     }
@@ -51,9 +55,9 @@ public class Utilities
     for (String key : keys)
     {
       StationTreeNode stn = tree.get(key);
-      for (int i=0; i<(2*level); i++)
+      for (int i=0; i<(2*level); i++) // Indentation
         System.out.print(" ");
-      System.out.println(stn.toString());
+      System.out.println(stn.toString()); // Station name
       if (stn.getSubTree().size() > 0)
         renderTree(stn.getSubTree(), level + 1);
     }
@@ -68,7 +72,12 @@ public class Utilities
   public static class StationTreeNode
     implements Comparable
   {
+    public final static int TIDE_STATION = 1;
+    public final static int CURRENT_STATION = 2;
+    
     private String label = "";
+    private String fullStationName = null;
+    private int stationType = 0;
     private TreeMap<String, StationTreeNode> subTree = new TreeMap<String, StationTreeNode>();
     
     public StationTreeNode(String label)
@@ -91,6 +100,26 @@ public class Utilities
     {
       return subTree;
     }
+
+    public void setFullStationName(String fullStationName)
+    {
+      this.fullStationName = fullStationName;
+    }
+
+    public String getFullStationName()
+    {
+      return fullStationName;
+    }
+
+    public void setStationType(int stationType)
+    {
+      this.stationType = stationType;
+    }
+
+    public int getStationType()
+    {
+      return stationType;
+    }
   }
   
   public static class StationObserver extends DefaultHandler
@@ -105,16 +134,36 @@ public class Utilities
     private void addStationToTree(BackEndTideComputer.TideStation ts)
     {
       TreeMap<String, Utilities.StationTreeNode> currentTree = tree;
+      String timeZoneLabel = ts.getTimeZone().substring(0, ts.getTimeZone().indexOf("/"));      
+      StationTreeNode tzstn = currentTree.get(timeZoneLabel);
+      if (tzstn == null)
+      {
+        tzstn = new StationTreeNode(timeZoneLabel);
+        currentTree.put(timeZoneLabel, tzstn);
+      }
+      currentTree = tzstn.getSubTree();
+      String timeZoneLabel2 = ts.getTimeZone().substring(ts.getTimeZone().indexOf("/") + 1);      
+      tzstn = currentTree.get(timeZoneLabel2);
+      if (tzstn == null)
+      {
+        tzstn = new StationTreeNode(timeZoneLabel2);
+        currentTree.put(timeZoneLabel2, tzstn);
+      }
+      currentTree = tzstn.getSubTree();
+      
+      StationTreeNode stn = null;
       for (String name : ts.getNameParts())
       {
-        StationTreeNode stn = currentTree.get(name);
+        stn = currentTree.get(name);
         if (stn == null)
         {
           stn = new StationTreeNode(name);
+          stn.setStationType(ts.isCurrentStation()?Utilities.StationTreeNode.CURRENT_STATION:Utilities.StationTreeNode.TIDE_STATION);
           currentTree.put(name, stn);
         }
         currentTree = stn.getSubTree();
       }
+      stn.setFullStationName(ts.getFullName());
    // currentTree.put(ts.getFullName(), new StationTreeNode(ts.getFullName()));      
     }
 
@@ -127,7 +176,7 @@ public class Utilities
     public void startElement(String uri, String localName, String qName, Attributes attributes)
       throws SAXException
     {
-  //    super.startElement(uri, localName, qName, attributes);
+  //  super.startElement(uri, localName, qName, attributes);
       if (!foundStation && "station".equals(qName))
       {
         String name = attributes.getValue("name");
@@ -179,5 +228,4 @@ public class Utilities
       }
     }
   }
-
 }
