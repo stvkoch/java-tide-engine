@@ -41,6 +41,9 @@
       <value n="oracle.jdevimpl.webservices.WebServicesMigratorHelper" v="11.1.1.1.0"/>
       <value n="oracle.jdevimpl.xml.wl.WeblogicMigratorHelper" v="11.1.1.1.0"/>
       <value n="oracle.modeler.bmmigrate.management.Migration" v="11.1.1.1.0"/>
+      <value n="oracle.tip.tools.ide.fabric.addin.SCAProjectMigrator" v="11.1.1.1.0.06"/>
+      <value n="oracle.tip.tools.ide.pm.addin.migrator.PMProjectMigrator" v="11.1.1.1.0"/>
+      <value n="oracle.tip.tools.ide.workflow.addin.TaskFormMigratorAddin" v="11.1.1.1.0"/>
       <value n="oracle.toplink.workbench.addin.migration.PersistenceProjectMigrator" v="11.1.1.1.1"/>
       <value n="oracle.toplink.workbench.addin.migration.TopLinkProjectMigrator" v="11.1.1.1.0"/>
    </hash>
@@ -53,6 +56,9 @@
       <string v="oracle.bm.commonIde.data.project.ModelerProjectSettings/modelersContentSet"/>
       <string v="oracle.toplink.workbench.addin/toplinkContentSet"/>
       <string v="oracle.adfdtinternal.model.ide.settings.ADFMSettings/adfmContentSet"/>
+      <string v="oracle.tip.tools.ide.fabric.addin.SCAContentSetProvider/sca-content"/>
+      <string v="oracle.bpm.fusion.repository.BPMProjectSettings/bpmProjectsProcessesContentSet"/>
+      <string v="oracle.bpm.fusion.repository.BPMProjectSettings/bpmProjectsOrganizationContentSet"/>
    </list>
    <value n="defaultPackage" v="tideengine"/>
    <hash n="oracle.jdeveloper.compiler.OjcConfiguration">
