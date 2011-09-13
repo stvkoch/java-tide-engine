@@ -37,7 +37,10 @@ public class BackEndTideComputer
     switch (CHOSEN_OPTION)
     {
       case SQL_OPTION:
-        conn = SQLUtil.getConnection(dbLocation, "TIDES", "tides", "tides");
+        if (dbLocation.startsWith("//"))
+          conn = SQLUtil.getServerConnection(dbLocation, "tides", "tides"); // like //localhost:1234/tides
+        else
+          conn = SQLUtil.getConnection(dbLocation, "TIDES", "tides", "tides");
         break;
       case XML_OPTION:
         constituents = BackEndXMLTideComputer.loadDOM(BackEndXMLTideComputer.CONSTITUENT_FILE);
