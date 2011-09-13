@@ -16,7 +16,7 @@ public class SampleMain
   public static void main(String[] args) throws Exception
   {
     System.out.println(args.length + " Argument(s)...");
-    boolean xmlTest = true;
+    boolean xmlTest = false;
     boolean dbTest  = true;
     
     if (xmlTest)
