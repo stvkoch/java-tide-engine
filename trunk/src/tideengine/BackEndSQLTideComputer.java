@@ -166,13 +166,23 @@ public class BackEndSQLTideComputer
     long before = System.currentTimeMillis();
     ArrayList<TideStation> stationData = new ArrayList<TideStation>();
     long after = System.currentTimeMillis();
-    String queryStr = "select name from stations";
+    String queryStr = "select select name, latitude, longitude, tzoffset, tzname, baseheightvalue, baseheightunit from stations";
     Statement query = conn.createStatement();
     ResultSet rs = query.executeQuery(queryStr);
     while (rs.next())
     {
-      String sn = rs.getString(1);
-      TideStation ts = findTideStation(sn, -1, conn);
+      TideStation ts = new TideStation();
+      ts.setFullName(rs.getString(1));
+      ts.setLatitude(rs.getDouble(2));
+      ts.setLongitude(rs.getDouble(3));
+      ts.setTimeOffset(rs.getString(4));
+      ts.setTimeZone(rs.getString(5));
+      ts.setBaseHeight(rs.getDouble(6));
+      ts.setUnit(rs.getString(7));
+      String[] np = ts.getFullName().split(",");
+      for (int i=0; i<np.length; i++)
+        ts.getNameParts().add(np[(np.length - 1) - i]);
+      
       stationData.add(ts);
     }
     rs.close();
