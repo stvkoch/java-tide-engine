@@ -166,7 +166,7 @@ public class BackEndSQLTideComputer
     long before = System.currentTimeMillis();
     ArrayList<TideStation> stationData = new ArrayList<TideStation>();
     long after = System.currentTimeMillis();
-    String queryStr = "select select name, latitude, longitude, tzoffset, tzname, baseheightvalue, baseheightunit from stations";
+    String queryStr = "select name, latitude, longitude, tzoffset, tzname, baseheightvalue, baseheightunit from stations";
     Statement query = conn.createStatement();
     ResultSet rs = query.executeQuery(queryStr);
     while (rs.next())
