@@ -114,6 +114,21 @@ public class BackEndTideComputer
     return ts;
   }
   
+  public static ArrayList<TideStation> getStationData() throws Exception
+  {
+    ArrayList<TideStation> alts = null;
+    switch (CHOSEN_OPTION)
+    {
+      case XML_OPTION:
+        alts = BackEndXMLTideComputer.getStationData();
+        break;
+      case SQL_OPTION:
+        alts = BackEndSQLTideComputer.getStationData(conn);
+        break;
+    }
+    return alts;
+  }
+  
   public static TreeMap<String, TideUtilities.StationTreeNode> buildStationTree()
   {
     TreeMap<String, TideUtilities.StationTreeNode> st = null;
