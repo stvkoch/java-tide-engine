@@ -3,12 +3,20 @@ package tideengine;
 
 import coreutilities.sql.SQLUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
 import java.util.ArrayList;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.InputSource;
 
 public class BackEndSQLTideComputer
 {
@@ -133,7 +141,7 @@ public class BackEndSQLTideComputer
     // Fix for the given year
 //  System.out.println("We are in " + year);
     // Correction to the Harmonics
-    if (ts != null)
+    if (ts != null && year != -1)
     {
       for (Harmonic harm : ts.getHarmonics())
       {
@@ -147,10 +155,31 @@ public class BackEndSQLTideComputer
           harm.setEpoch(harm.getEpoch() - epochFix);
         }
       }
+      if (verbose) System.out.println("Sites coefficients of [" + ts.getFullName() + "] fixed for " + year);
     }
-    if (verbose) System.out.println("Sites coefficients of [" + ts.getFullName() + "] fixed for " + year);
     
     return ts;
+  }
+  
+  public static ArrayList<TideStation> getStationData(Connection conn) throws Exception
+  {
+    long before = System.currentTimeMillis();
+    ArrayList<TideStation> stationData = new ArrayList<TideStation>();
+    long after = System.currentTimeMillis();
+    String queryStr = "select name from stations";
+    Statement query = conn.createStatement();
+    ResultSet rs = query.executeQuery(queryStr);
+    while (rs.next())
+    {
+      String sn = rs.getString(1);
+      TideStation ts = findTideStation(sn, -1, conn);
+      stationData.add(ts);
+    }
+    rs.close();
+    query.close();
+    if (verbose) System.out.println("Finding all the stations took " + Long.toString(after - before) + " ms");
+    
+    return stationData;
   }
   
   public static void setVerbose(boolean verbose)

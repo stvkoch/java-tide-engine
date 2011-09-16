@@ -494,6 +494,29 @@ public class BackEndXMLTideComputer
     return ts;
   }
   
+  public static ArrayList<TideStation> getStationData() throws Exception
+  {
+    long before = System.currentTimeMillis();
+    ArrayList<TideStation> stationData = new ArrayList<TideStation>();
+    StationFinder sf = new StationFinder(stationData);
+    try
+    {
+      SAXParserFactory factory = SAXParserFactory.newInstance();
+      SAXParser saxParser = factory.newSAXParser();      
+      InputSource is = new InputSource(new FileInputStream(new File(STATION_FILE)));
+      is.setEncoding("ISO-8859-1");
+      saxParser.parse(is, sf);       
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    long after = System.currentTimeMillis();
+    if (verbose) System.out.println("Finding all the stations took " + Long.toString(after - before) + " ms");
+    
+    return stationData;
+  }
+  
   public static void setVerbose(boolean verbose)
   {
     BackEndXMLTideComputer.verbose = verbose;
