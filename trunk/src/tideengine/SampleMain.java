@@ -61,12 +61,12 @@ public class SampleMain
             if (true)
             {
               double[] mm = TideUtilities.getMinMaxWH(ts, constSpeed, now);
-              System.out.println("At " + location + " in " + now.get(Calendar.YEAR) + ", min : " + TideUtilities.DF22.format(mm[TideUtilities.MIN_POS]) + " " + ts.getUnit() + ", max : " + TideUtilities.DF22.format(mm[TideUtilities.MAX_POS]) + " " + ts.getDisplayUnit());
+              System.out.println("At " + location + " in " + now.get(Calendar.YEAR) + ", min : " + TideUtilities.DF22PLUS.format(mm[TideUtilities.MIN_POS]) + " " + ts.getUnit() + ", max : " + TideUtilities.DF22PLUS.format(mm[TideUtilities.MAX_POS]) + " " + ts.getDisplayUnit());
             }
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
             if (false && ts.isTideStation())
-              System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(TideUtilities.getWaterHeightIn(wh, ts, TideStation.METERS)) + " " + TideStation.METERS);
+              System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(TideUtilities.getWaterHeightIn(wh, ts, TideStation.METERS)) + " " + TideStation.METERS);
           }
         }
         if (true)
@@ -76,7 +76,7 @@ public class SampleMain
           if (ts != null)
           {
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
     
           location = "Oyster Point Marina";
@@ -84,7 +84,7 @@ public class SampleMain
           if (ts != null)
           {
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
     
           location = "Shediac Bay, New Brunswick";
@@ -92,7 +92,7 @@ public class SampleMain
           if (ts != null)
           {
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
           else
             System.out.println("-- " + location + " not found...");
@@ -102,7 +102,7 @@ public class SampleMain
           if (ts != null)
           {
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
     
           location = "Cape Cod Canal, Massachusetts Current";
@@ -110,7 +110,7 @@ public class SampleMain
           if (ts != null)
           {
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
           
           // Oyster Point for today (every 30 minutes)
@@ -131,7 +131,7 @@ public class SampleMain
                 
                 double wh = TideUtilities.getWaterHeight(ts, constSpeed, cal);
                 TimeZone.setDefault(TimeZone.getTimeZone("127")); // for UTC display
-                System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + cal.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+                System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + cal.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
                 TimeZone.setDefault(tz);
               }
             }
@@ -159,7 +159,7 @@ public class SampleMain
                 
                 double wh = TideUtilities.getWaterHeight(ts, constSpeed, cal);
              // TimeZone.setDefault(TimeZone.getTimeZone("127")); // for UTC display
-                System.out.println(sdf.format(cal.getTime()) + ";" + TideUtilities.DF22.format(wh));
+                System.out.println(sdf.format(cal.getTime()) + ";" + TideUtilities.DF22PLUS.format(wh));
              // TimeZone.setDefault(tz);
               }
             }
@@ -271,7 +271,7 @@ public class SampleMain
             Collections.sort(timeAL);
             
             for (TimedValue tv : timeAL)
-              System.out.println(tv.getType() + " " + tv.getCalendar().getTime().toString() + " : " + TideUtilities.DF22.format(tv.getValue()) + " " + ts.getDisplayUnit());
+              System.out.println(tv.getType() + " " + tv.getCalendar().getTime().toString() + " : " + TideUtilities.DF22PLUS.format(tv.getValue()) + " " + ts.getDisplayUnit());
           }
         }
       }
@@ -308,12 +308,12 @@ public class SampleMain
             if (true)
             {
               double[] mm = TideUtilities.getMinMaxWH(ts, constSpeed, now);
-              System.out.println("At " + location + " in " + now.get(Calendar.YEAR) + ", min : " + TideUtilities.DF22.format(mm[TideUtilities.MIN_POS]) + " " + ts.getUnit() + ", max : " + TideUtilities.DF22.format(mm[TideUtilities.MAX_POS]) + " " + ts.getDisplayUnit());
+              System.out.println("At " + location + " in " + now.get(Calendar.YEAR) + ", min : " + TideUtilities.DF22PLUS.format(mm[TideUtilities.MIN_POS]) + " " + ts.getUnit() + ", max : " + TideUtilities.DF22PLUS.format(mm[TideUtilities.MAX_POS]) + " " + ts.getDisplayUnit());
             }
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
             if (false && ts.isTideStation())
-              System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(TideUtilities.getWaterHeightIn(wh, ts, TideStation.METERS)) + " " + TideStation.METERS);
+              System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(TideUtilities.getWaterHeightIn(wh, ts, TideStation.METERS)) + " " + TideStation.METERS);
           }
         }
         if (true)
@@ -323,7 +323,7 @@ public class SampleMain
           if (ts != null)
           {
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
     
           location = "Oyster Point Marina";
@@ -331,7 +331,7 @@ public class SampleMain
           if (ts != null)
           {
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
     
           location = "Shediac Bay, New Brunswick";
@@ -339,7 +339,7 @@ public class SampleMain
           if (ts != null)
           {
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
           else
             System.out.println("-- " + location + " not found...");
@@ -349,7 +349,7 @@ public class SampleMain
           if (ts != null)
           {
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
     
           location = "Cape Cod Canal, Massachusetts Current";
@@ -357,7 +357,7 @@ public class SampleMain
           if (ts != null)
           {
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
-            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+            System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
           
           // Oyster Point for today (every 30 minutes)
@@ -378,7 +378,7 @@ public class SampleMain
                 
                 double wh = TideUtilities.getWaterHeight(ts, constSpeed, cal);
                 TimeZone.setDefault(TimeZone.getTimeZone("127")); // for UTC display
-                System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + cal.getTime().toString() + " : " + TideUtilities.DF22.format(wh) + " " + ts.getDisplayUnit());
+                System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + cal.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
                 TimeZone.setDefault(tz);
               }
             }
@@ -406,7 +406,7 @@ public class SampleMain
                 
                 double wh = TideUtilities.getWaterHeight(ts, constSpeed, cal);
              // TimeZone.setDefault(TimeZone.getTimeZone("127")); // for UTC display
-                System.out.println(sdf.format(cal.getTime()) + ";" + TideUtilities.DF22.format(wh));
+                System.out.println(sdf.format(cal.getTime()) + ";" + TideUtilities.DF22PLUS.format(wh));
              // TimeZone.setDefault(tz);
               }
             }
@@ -518,7 +518,7 @@ public class SampleMain
             Collections.sort(timeAL);
             
             for (TimedValue tv : timeAL)
-              System.out.println(tv.getType() + " " + tv.getCalendar().getTime().toString() + " : " + TideUtilities.DF22.format(tv.getValue()) + " " + ts.getDisplayUnit());
+              System.out.println(tv.getType() + " " + tv.getCalendar().getTime().toString() + " : " + TideUtilities.DF22PLUS.format(tv.getValue()) + " " + ts.getDisplayUnit());
           }
         }
         
