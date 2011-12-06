@@ -30,11 +30,17 @@ public class TideUtilities
   private final static boolean verbose = false;
   public final static double FEET_2_METERS   = 0.30480061d; // US feet to meters
   public final static double COEFF_FOR_EPOCH = 0.017453292519943289D;
-  public final static DecimalFormat DF22 = new DecimalFormat("#0.00");
+  public final static DecimalFormat DF22     = new DecimalFormat("#0.00");
   public final static DecimalFormat DF22PLUS = new DecimalFormat("#0.00");
   static 
   {
     DF22PLUS.setPositivePrefix("+");  
+  }
+  public final static DecimalFormat DF2      = new DecimalFormat("#0");
+  public final static DecimalFormat DF2PLUS  = new DecimalFormat("#0");
+  static 
+  {
+    DF2PLUS.setPositivePrefix("+");  
   }
   
   public static TreeMap<String, StationTreeNode> buildStationTree()
