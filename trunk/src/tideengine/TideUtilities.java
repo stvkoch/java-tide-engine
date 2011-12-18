@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -42,11 +43,54 @@ public class TideUtilities
   {
     DF2PLUS.setPositivePrefix("+");  
   }
+
+  public final static HashMap<String, String> COEFF_DEFINITION = new HashMap<String, String>();
+  static
+  {
+    COEFF_DEFINITION.put("M2",   "Principal lunar semidiurnal constituent");
+    COEFF_DEFINITION.put("S2",   "Principal solar semidiurnal constituent");
+    COEFF_DEFINITION.put("N2",   "Larger lunar elliptic semidiurnal constituent");
+    COEFF_DEFINITION.put("K1",   "Lunar diurnal constituent");
+    COEFF_DEFINITION.put("M4",   "Shallow water overtides of principal lunar constituent");
+    COEFF_DEFINITION.put("O1",   "Lunar diurnal constituent");
+    COEFF_DEFINITION.put("M6",   "Shallow water overtides of principal lunar constituent");
+    COEFF_DEFINITION.put("MK3",  "Shallow water terdiurnal");
+    COEFF_DEFINITION.put("S4",   "Shallow water overtides of principal solar constituent");
+    COEFF_DEFINITION.put("MN4",  "Shallow water quarter diurnal constituent");
+    COEFF_DEFINITION.put("NU2",  "Larger lunar evectional constituent");
+    COEFF_DEFINITION.put("S6",   "Shallow water overtides of principal solar constituent");
+    COEFF_DEFINITION.put("MU2",  "Variational constituent");
+    COEFF_DEFINITION.put("2N2",  "Lunar elliptical semidiurnal second");
+    COEFF_DEFINITION.put("OO1",  "Lunar diurnal");
+    COEFF_DEFINITION.put("LAM2", "Smaller lunar evectional constituent");
+    COEFF_DEFINITION.put("S1",   "Solar diurnal constituent");
+    COEFF_DEFINITION.put("M1",   "Smaller lunar elliptic diurnal constituent");
+    COEFF_DEFINITION.put("J1",   "Smaller lunar elliptic diurnal constituent");
+    COEFF_DEFINITION.put("MM",   "Lunar monthly constituent");
+    COEFF_DEFINITION.put("SSA",  "Solar semiannual constituent");
+    COEFF_DEFINITION.put("SA",   "Solar annual constituent");
+    COEFF_DEFINITION.put("MSF",  "Lunisolar synodic fortnightly constituent");
+    COEFF_DEFINITION.put("MF",   "Lunisolar fortnightly constituent");
+    COEFF_DEFINITION.put("RHO",  "Larger lunar evectional diurnal constituent");
+    COEFF_DEFINITION.put("Q1",   "Larger lunar elliptic diurnal constituent");
+    COEFF_DEFINITION.put("T2",   "Larger solar elliptic constituent");
+    COEFF_DEFINITION.put("R2",   "Smaller solar elliptic constituent");
+    COEFF_DEFINITION.put("2Q1",  "Larger elliptic diurnal");
+    COEFF_DEFINITION.put("P1",   "Solar diurnal constituent");
+    COEFF_DEFINITION.put("2SM2", "Shallow water semidiurnal constituent");
+    COEFF_DEFINITION.put("M3",   "Lunar terdiurnal constituent");
+    COEFF_DEFINITION.put("L2",   "Smaller lunar elliptic semidiurnal constituent");
+    COEFF_DEFINITION.put("2MK3", "Shallow water terdiurnal constituent");
+    COEFF_DEFINITION.put("K2",   "Lunisolar semidiurnal constituent");
+    COEFF_DEFINITION.put("M8",   "Shallow water eighth diurnal constituent");
+    COEFF_DEFINITION.put("MS4",  "Shallow water quarter diurnal constituent");
+  }
   
   public static TreeMap<String, StationTreeNode> buildStationTree()
   {
     return buildStationTree(BackEndXMLTideComputer.STATION_FILE);
   }
+  
   public static TreeMap<String, StationTreeNode> buildStationTree(String stationFileName)
   {
     TreeMap<String, StationTreeNode> set = new TreeMap<String, StationTreeNode>();
@@ -161,6 +205,23 @@ public class TideUtilities
     
     return value;
   }
+  
+  public static String getHarmonicCoeffName(TideStation ts, 
+                                            ArrayList<Coefficient> constSpeed, 
+                                            int constSpeedIdx)
+  {
+    String name = "";
+    if (ts != null)
+      name = ts.getHarmonics().get(constSpeedIdx).getName();
+    else
+      name = constSpeed.get(constSpeedIdx).getName();
+    return name;
+  }
+  
+  public static String getHarmonicCoeffDefinition(String name)
+  {
+    return COEFF_DEFINITION.get(name);
+  }
 
   public static double getHarmonicValue(Date d, 
                                         Date jan1st, 
@@ -174,14 +235,56 @@ public class TideUtilities
     long nbSecSinceJan1st = (d.getTime() - jan1st.getTime()) / 1000L;
     double timeOffset = nbSecSinceJan1st * 0.00027777777777777778D;
     value = stationBaseHeight;
-    value += (ts.getHarmonics().get(constSpeedIdx).getAmplitude() * Math.cos(constSpeed.get(constSpeedIdx).getValue() * timeOffset - ts.getHarmonics().get(constSpeedIdx).getEpoch()));
-       
+    
+    value += (ts.getHarmonics().get(constSpeedIdx).getAmplitude() * Math.cos(constSpeed.get(constSpeedIdx).getValue() * timeOffset - ts.getHarmonics().get(constSpeedIdx).getEpoch()));      
     if (ts.getUnit().indexOf("^2") > -1)
       value = (value >= 0.0D ? Math.sqrt(value): -Math.sqrt(-value));
     
     return value;
   }
-
+  
+  public static double getHarmonicValue(Date d, 
+                                        Date jan1st, 
+                                        TideStation ts, 
+                                        ArrayList<Coefficient> constSpeed, 
+                                        String coeffName)
+  {
+    double value = 0d;
+    
+    double stationBaseHeight = ts.getBaseHeight();
+    long nbSecSinceJan1st = (d.getTime() - jan1st.getTime()) / 1000L;
+    double timeOffset = nbSecSinceJan1st * 0.00027777777777777778D;
+    value = stationBaseHeight;
+    
+    int constSpeedIdx = getHarmonicIndex(ts.getHarmonics(), coeffName);
+//  int constSpeedIdx = getHarmonicIndex(constSpeed, coeffName);
+    
+    value += (ts.getHarmonics().get(constSpeedIdx).getAmplitude() * Math.cos(constSpeed.get(constSpeedIdx).getValue() * timeOffset - ts.getHarmonics().get(constSpeedIdx).getEpoch()));      
+    if (ts.getUnit().indexOf("^2") > -1)
+      value = (value >= 0.0D ? Math.sqrt(value): -Math.sqrt(-value));
+    
+    return value;
+  }
+  
+  public static int getHarmonicIndex(ArrayList<Harmonic> alh, String name)
+  {
+    int idx = 0;
+    boolean found = false;
+    for (Harmonic h : alh)
+    {
+      if (h.getName().equals(name))
+      {
+        found = true;
+        break;
+      }
+      else
+        idx++;
+    }    
+    if (!found)
+      System.out.println("Coeff [" + name + "] not found.");
+    return (found?idx:-1);
+  }
+  
   public static double getWaterHeight(TideStation ts, ArrayList<Coefficient> constSpeed, Calendar when) throws Exception
   {
     double wh = 0d;
