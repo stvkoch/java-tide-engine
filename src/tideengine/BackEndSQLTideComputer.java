@@ -21,14 +21,21 @@ import org.xml.sax.InputSource;
 public class BackEndSQLTideComputer
 {
   private static boolean verbose = false;
+  private final static String QUERY_COEFF        = "select coeffname, coeffvalue from speedconstituents sc, coeffdefs cd where sc.coeffname = cd.name order by cd.rank";
+  private final static String QUERY_NODE         = "select value from nodefactors where coeffname = ? and year = ?";
+  private final static String QUERY_EQU          = "select value from equilibriums where coeffname = ? and year = ?";
+  private final static String QUERY_STATION_ONE  = "select name, latitude, longitude, tzoffset, tzname, baseheightvalue, baseheightunit from stations where name like ?";
+  //                                                       1     2         3          4         5       6                7
+  private final static String QUERY_STATION_TWO  = "select coeffname, amplitude, epoch from stationdata sd, coeffdefs cd where sd.stationname = ? and sd.coeffname = cd.name order by cd.rank";
+  //                                                       1          2          3
+  private final static String QUERY_STATION_DATA = "select name, latitude, longitude, tzoffset, tzname, baseheightvalue, baseheightunit from stations";
     
   public static ArrayList<Coefficient> buildSiteConstSpeed(Connection conn) throws Exception
   {
     ArrayList<Coefficient> csal = new ArrayList<Coefficient>();
 
-    String coeffQuery = "select coeffname, coeffvalue from speedconstituents sc, coeffdefs cd where sc.coeffname = cd.name order by cd.rank";
     Statement query = conn.createStatement();
-    ResultSet rs = query.executeQuery(coeffQuery);
+    ResultSet rs = query.executeQuery(QUERY_COEFF);
     while (rs.next())
     {
       String name = rs.getString(1);
@@ -46,8 +53,7 @@ public class BackEndSQLTideComputer
     double d = 0;
     try
     {
-      String queryStr = "select value from nodefactors where coeffname = ? and year = ?";
-      PreparedStatement pstmt = conn.prepareStatement(queryStr);
+      PreparedStatement pstmt = conn.prepareStatement(QUERY_NODE);
       pstmt.setString(1, name);
       pstmt.setInt(2, year);
       ResultSet rs = pstmt.executeQuery();
@@ -71,8 +77,7 @@ public class BackEndSQLTideComputer
     double d = 0;
     try
     {
-      String queryStr = "select value from equilibriums where coeffname = ? and year = ?";
-      PreparedStatement pstmt = conn.prepareStatement(queryStr);
+      PreparedStatement pstmt = conn.prepareStatement(QUERY_EQU);
       pstmt.setString(1, name);
       pstmt.setInt(2, year);
       ResultSet rs = pstmt.executeQuery();
@@ -93,12 +98,8 @@ public class BackEndSQLTideComputer
   
   public static TideStation findTideStation(String stationName, int year, Connection conn) throws Exception
   {
-    String queryOne = "select name, latitude, longitude, tzoffset, tzname, baseheightvalue, baseheightunit from stations where name like ?";
-    //                        1     2         3          4         5       6                7
-    String queryTwo = "select coeffname, amplitude, epoch from stationdata sd, coeffdefs cd where sd.stationname = ? and sd.coeffname = cd.name order by cd.rank";
-    //                        1          2          3
-    PreparedStatement pstmt1 =  conn.prepareStatement(queryOne);
-    PreparedStatement pstmt2 =  conn.prepareStatement(queryTwo);
+    PreparedStatement pstmt1 =  conn.prepareStatement(QUERY_STATION_ONE);
+    PreparedStatement pstmt2 =  conn.prepareStatement(QUERY_STATION_TWO);
     pstmt1.setString(1, "%" + stationName + "%");
     long before = System.currentTimeMillis();
 
@@ -166,9 +167,8 @@ public class BackEndSQLTideComputer
     long before = System.currentTimeMillis();
     ArrayList<TideStation> stationData = new ArrayList<TideStation>();
     long after = System.currentTimeMillis();
-    String queryStr = "select name, latitude, longitude, tzoffset, tzname, baseheightvalue, baseheightunit from stations";
     Statement query = conn.createStatement();
-    ResultSet rs = query.executeQuery(queryStr);
+    ResultSet rs = query.executeQuery(QUERY_STATION_DATA);
     while (rs.next())
     {
       TideStation ts = new TideStation();
