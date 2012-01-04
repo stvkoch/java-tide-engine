@@ -10,11 +10,11 @@ import java.sql.Statement;
 
 import java.text.DecimalFormat;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -185,7 +185,7 @@ public class TideUtilities
     return d / FEET_2_METERS;  
   }
 
-  public static double getWaterHeight(Date d, Date jan1st, TideStation ts, ArrayList<Coefficient> constSpeed)
+  public static double getWaterHeight(Date d, Date jan1st, TideStation ts, List<Coefficient> constSpeed)
   {
     double value = 0d;
     
@@ -207,7 +207,7 @@ public class TideUtilities
   }
   
   public static String getHarmonicCoeffName(TideStation ts, 
-                                            ArrayList<Coefficient> constSpeed, 
+                                            List<Coefficient> constSpeed, 
                                             int constSpeedIdx)
   {
     String name = "";
@@ -226,7 +226,7 @@ public class TideUtilities
   public static double getHarmonicValue(Date d, 
                                         Date jan1st, 
                                         TideStation ts, 
-                                        ArrayList<Coefficient> constSpeed, 
+                                        List<Coefficient> constSpeed, 
                                         int constSpeedIdx)
   {
     double value = 0d;
@@ -246,7 +246,7 @@ public class TideUtilities
   public static double getHarmonicValue(Date d, 
                                         Date jan1st, 
                                         TideStation ts, 
-                                        ArrayList<Coefficient> constSpeed, 
+                                        List<Coefficient> constSpeed, 
                                         String coeffName)
   {
     double value = 0d;
@@ -266,7 +266,7 @@ public class TideUtilities
     return value;
   }
   
-  public static int getHarmonicIndex(ArrayList<Harmonic> alh, String name)
+  public static int getHarmonicIndex(List<Harmonic> alh, String name)
   {
     int idx = 0;
     boolean found = false;
@@ -285,7 +285,7 @@ public class TideUtilities
     return (found?idx:-1);
   }
   
-  public static double getWaterHeight(TideStation ts, ArrayList<Coefficient> constSpeed, Calendar when) throws Exception
+  public static double getWaterHeight(TideStation ts, List<Coefficient> constSpeed, Calendar when) throws Exception
   {
     double wh = 0d;
     if (ts != null)
@@ -306,7 +306,7 @@ public class TideUtilities
   public final static int MIN_POS = 0;
   public final static int MAX_POS = 1;
   
-  public static double[] getMinMaxWH(TideStation ts, ArrayList<Coefficient> constSpeed, Calendar when) throws Exception
+  public static double[] getMinMaxWH(TideStation ts, List<Coefficient> constSpeed, Calendar when) throws Exception
   {
     double[] minMax = { 0d, 0d };
     if (ts != null)
@@ -334,7 +334,7 @@ public class TideUtilities
     return minMax;
   }
 
-  public static double[] getMinMaxWH(TideStation ts, ArrayList<Coefficient> constSpeed, Calendar from, Calendar to) throws Exception
+  public static double[] getMinMaxWH(TideStation ts, List<Coefficient> constSpeed, Calendar from, Calendar to) throws Exception
   {
     double[] minMax = { 0d, 0d };
     if (ts != null)

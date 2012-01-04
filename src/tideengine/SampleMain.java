@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
@@ -49,7 +50,7 @@ public class SampleMain
         long before = 0;
         long after = 0;
   
-        ArrayList<Coefficient> constSpeed = BackEndTideComputer.buildSiteConstSpeed();
+        List<Coefficient> constSpeed = BackEndTideComputer.buildSiteConstSpeed();
         
         Calendar now = GregorianCalendar.getInstance();
         String location = "Port Townsend";
@@ -258,7 +259,7 @@ public class SampleMain
             System.out.println("High-Low water Calculation took " + Long.toString(after - before) + " ms");
             System.out.println("-- " + location + " --");
     
-            ArrayList<TimedValue> timeAL = new ArrayList<TimedValue>(4);
+            List<TimedValue> timeAL = new ArrayList<TimedValue>(4);
             if (low1Cal != null)
               timeAL.add(new TimedValue("LW", low1Cal, low1));
             if (low2Cal != null)
@@ -296,7 +297,7 @@ public class SampleMain
       if (true)
       {
         TideStation ts = null;
-        ArrayList<Coefficient> constSpeed = BackEndTideComputer.buildSiteConstSpeed();      
+        List<Coefficient> constSpeed = BackEndTideComputer.buildSiteConstSpeed();      
         Calendar now = GregorianCalendar.getInstance();
         
         String location = "Port Townsend";
@@ -505,7 +506,7 @@ public class SampleMain
             System.out.println("High-Low water Calculation took " + Long.toString(after - before) + " ms");
             System.out.println("-- " + location + " --");
     
-            ArrayList<TimedValue> timeAL = new ArrayList<TimedValue>(4);
+            List<TimedValue> timeAL = new ArrayList<TimedValue>(4);
             if (low1Cal != null)
               timeAL.add(new TimedValue("LW", low1Cal, low1));
             if (low2Cal != null)

@@ -11,6 +11,8 @@ import java.net.URL;
 
 import java.util.ArrayList;
 
+import java.util.List;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -393,9 +395,9 @@ public class BackEndXMLTideComputer
     return doc;
   }
   
-  public static ArrayList<Coefficient> buildSiteConstSpeed(XMLDocument doc) throws Exception
+  public static List<Coefficient> buildSiteConstSpeed(XMLDocument doc) throws Exception
   {
-    ArrayList<Coefficient> csal = new ArrayList<Coefficient>();
+    List<Coefficient> csal = new ArrayList<Coefficient>();
     String xPath = "//const-speed";
     NodeList nl = doc.selectNodes(xPath);
     for (int i=0; i<nl.getLength(); i++)
@@ -494,10 +496,10 @@ public class BackEndXMLTideComputer
     return ts;
   }
   
-  public static ArrayList<TideStation> getStationData() throws Exception
+  public static List<TideStation> getStationData() throws Exception
   {
     long before = System.currentTimeMillis();
-    ArrayList<TideStation> stationData = new ArrayList<TideStation>();
+    List<TideStation> stationData = new ArrayList<TideStation>();
     StationFinder sf = new StationFinder(stationData);
     try
     {
@@ -526,7 +528,7 @@ public class BackEndXMLTideComputer
   {
     private String stationName = "";
     private TideStation ts = null;
-    private ArrayList<TideStation> stationArrayList = null;
+    private List<TideStation> stationArrayList = null;
     
     public void setStationName(String sn)
     {
@@ -537,7 +539,7 @@ public class BackEndXMLTideComputer
     {
     }
 
-    public StationFinder(ArrayList<TideStation> al)
+    public StationFinder(List<TideStation> al)
     {
       this.stationArrayList = al;
     }
