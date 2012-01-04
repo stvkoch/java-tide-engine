@@ -1,6 +1,7 @@
 package tideengine;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TideStation
 {
@@ -10,14 +11,14 @@ public class TideStation
   public final static String SQUARE_KNOTS  = "knots^2";
   
   private String fullName = "";
-  private ArrayList<String> nameParts = new ArrayList<String>();
+  private List<String> nameParts = new ArrayList<String>();
   private double latitude = 0D;
   private double longitude = 0D;
   private double baseHeight = 0D;
   private String unit = "";
   private String timeZone = "";
   private String timeOffset = "";
-  private ArrayList<Harmonic> harmonics = new ArrayList<Harmonic>();
+  private List<Harmonic> harmonics = new ArrayList<Harmonic>();
 
   public void setFullName(String fullName)
   {
@@ -29,7 +30,7 @@ public class TideStation
     return fullName;
   }
 
-  public ArrayList<String> getNameParts()
+  public List<String> getNameParts()
   {
     return nameParts;
   }
@@ -74,7 +75,7 @@ public class TideStation
     return unit;
   }
 
-  public ArrayList<Harmonic> getHarmonics()
+  public List<Harmonic> getHarmonics()
   {
     return harmonics;
   }

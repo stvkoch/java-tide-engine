@@ -13,6 +13,8 @@ import java.sql.Statement;
 
 import java.util.ArrayList;
 
+import java.util.List;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -30,9 +32,9 @@ public class BackEndSQLTideComputer
   //                                                       1          2          3
   private final static String QUERY_STATION_DATA = "select name, latitude, longitude, tzoffset, tzname, baseheightvalue, baseheightunit from stations";
     
-  public static ArrayList<Coefficient> buildSiteConstSpeed(Connection conn) throws Exception
+  public static List<Coefficient> buildSiteConstSpeed(Connection conn) throws Exception
   {
-    ArrayList<Coefficient> csal = new ArrayList<Coefficient>();
+    List<Coefficient> csal = new ArrayList<Coefficient>();
 
     Statement query = conn.createStatement();
     ResultSet rs = query.executeQuery(QUERY_COEFF);
@@ -162,10 +164,10 @@ public class BackEndSQLTideComputer
     return ts;
   }
   
-  public static ArrayList<TideStation> getStationData(Connection conn) throws Exception
+  public static List<TideStation> getStationData(Connection conn) throws Exception
   {
     long before = System.currentTimeMillis();
-    ArrayList<TideStation> stationData = new ArrayList<TideStation>();
+    List<TideStation> stationData = new ArrayList<TideStation>();
     long after = System.currentTimeMillis();
     Statement query = conn.createStatement();
     ResultSet rs = query.executeQuery(QUERY_STATION_DATA);
@@ -205,7 +207,7 @@ public class BackEndSQLTideComputer
     System.out.println("Connected in " + Long.toString(after - before) + " ms");
     System.out.println("----------------------");
     before = System.currentTimeMillis();
-    ArrayList<Coefficient> alc = buildSiteConstSpeed(conn);
+    List<Coefficient> alc = buildSiteConstSpeed(conn);
     after = System.currentTimeMillis();
     System.out.println("ArrayList generated in " + Long.toString(after - before) + " ms");
     System.out.println("----------------------");

@@ -8,6 +8,7 @@ import java.sql.Connection;
 
 import java.util.ArrayList;
 
+import java.util.List;
 import java.util.TreeMap;
 
 import oracle.xml.parser.v2.XMLDocument;
@@ -54,9 +55,9 @@ public class BackEndTideComputer
       conn.close();
   }
   
-  public static ArrayList<Coefficient> buildSiteConstSpeed() throws Exception
+  public static List<Coefficient> buildSiteConstSpeed() throws Exception
   {
-    ArrayList<Coefficient> constSpeed = null;
+    List<Coefficient> constSpeed = null;
     switch (CHOSEN_OPTION)
     {
       case XML_OPTION:
@@ -114,9 +115,9 @@ public class BackEndTideComputer
     return ts;
   }
   
-  public static ArrayList<TideStation> getStationData() throws Exception
+  public static List<TideStation> getStationData() throws Exception
   {
-    ArrayList<TideStation> alts = null;
+    List<TideStation> alts = null;
     switch (CHOSEN_OPTION)
     {
       case XML_OPTION:
