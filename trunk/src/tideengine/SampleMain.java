@@ -288,7 +288,8 @@ public class SampleMain
     if (dbTest)
     {
       System.out.println("DB Tests");
-      BackEndTideComputer.connect(BackEndTideComputer.SQL_OPTION);
+//    BackEndTideComputer.connect(BackEndTideComputer.SQL_OPTION);
+      BackEndTideComputer.connect(BackEndTideComputer.SQLITE_OPTION);
       BackEndTideComputer.setVerbose(false);
       
       // Some tests, with SQL

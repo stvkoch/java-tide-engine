@@ -2,7 +2,11 @@ package tideengine;
 
 import coreutilities.sql.SQLUtil;
 
+import coreutilities.sql.SQLiteUtil;
+
 import java.io.File;
+
+import java.security.AccessControlException;
 
 import java.sql.Connection;
 
@@ -19,10 +23,20 @@ import oracle.xml.parser.v2.XMLDocument;
  */
 public class BackEndTideComputer
 {
-  private static String dbLocation = System.getProperty("db.location", ".." + File.separator + "all-db");
+  private static String dbLocation = "all-db";
+  static
+  {
+    try { dbLocation = System.getProperty("db.location", ".." + File.separator + "all-db"); }
+    catch (Exception ex)
+    {
+      System.err.println("Are you an Applet? " + ex.getLocalizedMessage() + " (OK).");
+    }
+  }
+  private static String sqliteDb = "sqlite" + File.separator + "tidedb";
   
   public static final int XML_OPTION = 0;
   public static final int SQL_OPTION = 1;
+  public static final int SQLITE_OPTION = 2;
   
   private static int CHOSEN_OPTION = XML_OPTION;
 
@@ -43,6 +57,30 @@ public class BackEndTideComputer
         else
           conn = SQLUtil.getConnection(dbLocation, "TIDES", "tides", "tides");
         break;
+      case SQLITE_OPTION:
+        try
+        {
+          conn = SQLiteUtil.getConnection(sqliteDb);
+          if (conn == null)
+          {
+            System.err.println("** Cannot connect");
+            throw new RuntimeException("SQLite connection cannot be obtained");
+          }
+          else
+            System.out.println("** Connection to SQLite OK **"); 
+        }
+        catch (AccessControlException iaex)
+        {
+          System.err.println("** Cannot connect");
+          System.err.println(iaex.getLocalizedMessage());
+          // iaex.printStackTrace();
+          if (conn == null)
+          {
+            System.err.println("** Cannot connect");
+            throw new RuntimeException("SQLite connection cannot be obtained");
+          }
+        }
+        break;
       case XML_OPTION:
         constituents = BackEndXMLTideComputer.loadDOM(BackEndXMLTideComputer.CONSTITUENT_FILE);
         break;
@@ -51,7 +89,7 @@ public class BackEndTideComputer
   
   public static void disconnect() throws Exception
   {
-    if (CHOSEN_OPTION == SQL_OPTION)
+    if (CHOSEN_OPTION == SQL_OPTION || CHOSEN_OPTION == SQLITE_OPTION)
       conn.close();
   }
   
@@ -64,6 +102,7 @@ public class BackEndTideComputer
         constSpeed = BackEndXMLTideComputer.buildSiteConstSpeed(constituents);
         break;
       case SQL_OPTION:
+      case SQLITE_OPTION:
         constSpeed = BackEndSQLTideComputer.buildSiteConstSpeed(conn);
         break;
     }
@@ -79,6 +118,7 @@ public class BackEndTideComputer
         d = BackEndXMLTideComputer.getAmplitudeFix(constituents, year, name);
         break;
       case SQL_OPTION:
+      case SQLITE_OPTION:
         d = BackEndSQLTideComputer.getAmplitudeFix(conn, year, name);
         break;
     }
@@ -94,6 +134,7 @@ public class BackEndTideComputer
         d = BackEndXMLTideComputer.getEpochFix(constituents, year, name);
         break;
       case SQL_OPTION:
+      case SQLITE_OPTION:
         d = BackEndSQLTideComputer.getEpochFix(conn, year, name);
         break;
     }
@@ -109,6 +150,7 @@ public class BackEndTideComputer
         ts = BackEndXMLTideComputer.findTideStation(stationName, year, constituents);
         break;
       case SQL_OPTION:
+      case SQLITE_OPTION:
         ts = BackEndSQLTideComputer.findTideStation(stationName, year, conn);
         break;
     }
@@ -124,6 +166,7 @@ public class BackEndTideComputer
         alts = BackEndXMLTideComputer.getStationData();
         break;
       case SQL_OPTION:
+      case SQLITE_OPTION:
         alts = BackEndSQLTideComputer.getStationData(conn);
         break;
     }
@@ -140,6 +183,7 @@ public class BackEndTideComputer
         st = TideUtilities.buildStationTree(stationFileLocation);
         break;
       case SQL_OPTION:
+      case SQLITE_OPTION:
         st = TideUtilities.buildStationTree(conn);
         break;
     }      
@@ -151,6 +195,7 @@ public class BackEndTideComputer
     switch (CHOSEN_OPTION)
     {
       case SQL_OPTION:
+      case SQLITE_OPTION:
         BackEndSQLTideComputer.setVerbose(v);
         break;
       case XML_OPTION:

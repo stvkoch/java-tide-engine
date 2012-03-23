@@ -20,6 +20,9 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.InputSource;
 
+/**
+ * Uses Hypersonic SQL
+ */
 public class BackEndSQLTideComputer
 {
   private static boolean verbose = false;
