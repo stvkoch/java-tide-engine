@@ -10,11 +10,13 @@ import java.sql.Statement;
 
 import java.text.DecimalFormat;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -43,6 +45,9 @@ public class TideUtilities
   {
     DF2PLUS.setPositivePrefix("+");  
   }
+  public final static DecimalFormat DF31    = new DecimalFormat("##0.0");
+  public final static DecimalFormat DF13    = new DecimalFormat("##0.000");
+  public final static DecimalFormat DF36    = new DecimalFormat("##0.000000");
 
   public final static HashMap<String, String> COEFF_DEFINITION = new HashMap<String, String>();
   static
@@ -185,16 +190,20 @@ public class TideUtilities
     return d / FEET_2_METERS;  
   }
 
-  public static double getWaterHeight(Date d, Date jan1st, TideStation ts, List<Coefficient> constSpeed)
+  public static double getWaterHeight(Calendar d, Calendar jan1st, TideStation ts, List<Coefficient> constSpeed)
   {
     double value = 0d;
     
     double stationBaseHeight = ts.getBaseHeight();
-    long nbSecSinceJan1st = (d.getTime() - jan1st.getTime() ) / 1000L;
+    long nbSecSinceJan1st = (d.getTimeInMillis() - jan1st.getTimeInMillis() ) / 1000L;
+//  long nbSecSinceJan1st = (d.getTime().getTime() - jan1st.getTime().getTime() ) / 1000L;
+//  System.out.println(" ----- NbSec for " + d.getTime().toString() + " = " + nbSecSinceJan1st);
     double timeOffset = nbSecSinceJan1st * 0.00027777777777777778D;
     value = stationBaseHeight;
     for (int i=0; i<constSpeed.size(); i++)
     {
+      if (!ts.getHarmonics().get(i).getName().equals(constSpeed.get(i).getName()))
+        System.out.println("..... Mismatch!!!");
       value += (ts.getHarmonics().get(i).getAmplitude() * Math.cos(constSpeed.get(i).getValue() * timeOffset - ts.getHarmonics().get(i).getEpoch()));
       if (verbose)
         System.out.println("Coefficient:" + ts.getHarmonics().get(i).getName() + " ampl:" + ts.getHarmonics().get(i).getAmplitude() + ", epoch:" + ts.getHarmonics().get(i).getEpoch());
@@ -293,8 +302,8 @@ public class TideUtilities
       // Calculate min/max, for the graph
       int year = when.get(Calendar.YEAR); 
       // Calc Jan 1st of the current year
-      Date jan1st = new GregorianCalendar(year, 0, 1).getTime();
-      wh = getWaterHeight(when.getTime(), jan1st, ts, constSpeed);
+      Calendar jan1st = new GregorianCalendar(year, Calendar.JANUARY, 1);
+      wh = getWaterHeight(when, jan1st, ts, constSpeed);
 //    System.out.println("Water Height in " + ts.getFullName() + " on " + now.toString() + " is " + DF22.format(wh) + " " + ts.getUnit());
     }
     else
@@ -314,18 +323,19 @@ public class TideUtilities
       // Calculate min/max, for the graph
       int year = when.get(Calendar.YEAR); 
       // Calc Jan 1st of the current year
-      Date jan1st = new GregorianCalendar(year, 0, 1).getTime();
-      Date dec31st = new GregorianCalendar(year, 11, 31, 12, 0).getTime(); // 31 Dec, At noon
+      Calendar jan1st  = new GregorianCalendar(year, Calendar.JANUARY, 1);
+      Calendar dec31st = new GregorianCalendar(year, Calendar.DECEMBER, 31, 12, 0); // 31 Dec, At noon
       double max = -Double.MAX_VALUE;
       double min =  Double.MAX_VALUE;
-      Date date = jan1st;
+      Calendar date = (Calendar)jan1st.clone();
       while (date.before(dec31st))
       {
         double d = getWaterHeight(date, jan1st, ts, constSpeed);
+//      System.out.println("Height at " + ts.getFullName() + " at " + date.getTime() + " = " + d);
         max = Math.max(max, d);
         min = Math.min(min, d);
 
-        date = new Date(date.getTime() + (7200 * 1000)); // Plus 2 hours
+        date.add(Calendar.HOUR, 2); // date = new Date(date.getTime() + (7200 * 1000)); // Plus 2 hours
       }
   //  System.out.println("In " + year + ", Min:" + min + ", Max:" + max);
       minMax[MIN_POS] = min;
@@ -346,8 +356,8 @@ public class TideUtilities
       while (date.getTime().before(to.getTime()))
       {
         // Calc Jan 1st of the current year
-        Date jan1st = new GregorianCalendar(date.get(Calendar.YEAR), 0, 1).getTime();
-        double d = getWaterHeight(date.getTime(), jan1st, ts, constSpeed);
+        Calendar jan1st = new GregorianCalendar(date.get(Calendar.YEAR), 0, 1);
+        double d = getWaterHeight(date, jan1st, ts, constSpeed);
         max = Math.max(max, d);
         min = Math.min(min, d);
 
@@ -375,6 +385,40 @@ public class TideUtilities
         val /= FEET_2_METERS;
     }
     return val;
+  }
+  
+  public static List<String[]> getStationHarmonicConstituents(TideStation ts, List<Coefficient> constSpeed)
+  {
+    List<String[]> hcList = new ArrayList<String[]>();
+    int rank = 1;
+
+    Calendar now    = GregorianCalendar.getInstance();
+    Calendar jan1st = new GregorianCalendar(now.get(Calendar.YEAR), Calendar.JANUARY, 1);
+    
+    long nbSecSinceJan1st = (now.getTimeInMillis() - jan1st.getTimeInMillis() ) / 1000L;
+    double timeOffset = nbSecSinceJan1st * 0.00027777777777777778D;        
+    
+    for ( String k : COEFF_DEFINITION.keySet())
+    {
+      int constIdx = getHarmonicIndex(ts.getHarmonics(), k);
+      if (constIdx > -1)
+      {
+        double amplitude = ts.getHarmonics().get(constIdx).getAmplitude();
+        double epoch     = ts.getHarmonics().get(constIdx).getEpoch();
+        double speed     = constSpeed.get(constIdx).getValue();        
+        double phase     = Math.toDegrees(speed * timeOffset - epoch) % 360;
+        
+        String[] line = { Integer.toString(rank),
+                          k,
+                          DF13.format(amplitude),
+                          DF31.format(phase),
+                          DF36.format(speed)
+                        };
+        hcList.add(line);
+        rank++;
+      }
+    }
+    return hcList;
   }
   
   private static void addStationToTree(tideengine.TideStation ts, TreeMap<String, TideUtilities.StationTreeNode> currentTree)
