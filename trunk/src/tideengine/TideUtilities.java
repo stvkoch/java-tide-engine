@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import javax.xml.parsers.SAXParser;
@@ -90,6 +91,11 @@ public class TideUtilities
     COEFF_DEFINITION.put("M8",   "Shallow water eighth diurnal constituent");
     COEFF_DEFINITION.put("MS4",  "Shallow water quarter diurnal constituent");
   }
+  
+  public final static String[] ORDERED_COEFF = { "M2", "S2", "N2", "K1", "M4", "O1", "M6", "MK3", "S4", "MN4", 
+                                                 "NU2", "S6", "MU2", "2N2", "OO1", "LAM2", "S1", "M1", "J1", 
+                                                 "MM", "SSA", "SA", "MSF", "MF", "RHO", "Q1", "T2", "R2", "2Q1", 
+                                                 "P1", "2SM2", "M3", "L2", "2MK3", "K2", "M8", "MS4" };
   
   public static TreeMap<String, StationTreeNode> buildStationTree()
   {
@@ -302,7 +308,21 @@ public class TideUtilities
       // Calculate min/max, for the graph
       int year = when.get(Calendar.YEAR); 
       // Calc Jan 1st of the current year
-      Calendar jan1st = new GregorianCalendar(year, Calendar.JANUARY, 1);
+      Calendar jan1st = null;
+      if (false)
+        jan1st = new GregorianCalendar(year, Calendar.JANUARY, 1);
+      else
+      {
+        jan1st = new GregorianCalendar();
+        jan1st.setTimeZone(TimeZone.getTimeZone(ts.getTimeZone()));
+        jan1st.set(Calendar.YEAR, year);
+        jan1st.set(Calendar.MONTH, Calendar.JANUARY);
+        jan1st.set(Calendar.DAY_OF_MONTH, 1);
+        jan1st.set(Calendar.HOUR_OF_DAY, 0);
+        jan1st.set(Calendar.MINUTE, 0);
+        jan1st.set(Calendar.SECOND, 0);
+        jan1st.set(Calendar.MILLISECOND, 0);
+      }
       wh = getWaterHeight(when, jan1st, ts, constSpeed);
 //    System.out.println("Water Height in " + ts.getFullName() + " on " + now.toString() + " is " + DF22.format(wh) + " " + ts.getUnit());
     }
