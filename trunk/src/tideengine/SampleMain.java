@@ -55,10 +55,12 @@ public class SampleMain
         List<Coefficient> constSpeed = BackEndTideComputer.buildSiteConstSpeed();
         
         Calendar now = GregorianCalendar.getInstance();
-        String location = "Port Townsend";
+        String location = null;
         if (false)
         {
+          location = "Port Townsend";          
           ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR));
+          now.setTimeZone(TimeZone.getTimeZone(ts.getTimeZone()));
           if (ts != null)
           {
             if (true)
@@ -78,6 +80,7 @@ public class SampleMain
           ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR));
           if (ts != null)
           {
+            now.setTimeZone(TimeZone.getTimeZone(ts.getTimeZone()));
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
             System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
@@ -86,6 +89,7 @@ public class SampleMain
           ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR));
           if (ts != null)
           {
+            now.setTimeZone(TimeZone.getTimeZone(ts.getTimeZone()));
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
             System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
@@ -94,6 +98,7 @@ public class SampleMain
           ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR));
           if (ts != null)
           {
+            now.setTimeZone(TimeZone.getTimeZone(ts.getTimeZone()));
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
             System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
@@ -104,6 +109,7 @@ public class SampleMain
           ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR));
           if (ts != null)
           {
+            now.setTimeZone(TimeZone.getTimeZone(ts.getTimeZone()));
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
             System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
@@ -112,6 +118,7 @@ public class SampleMain
           ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR));
           if (ts != null)
           {
+            now.setTimeZone(TimeZone.getTimeZone(ts.getTimeZone()));
             double wh = TideUtilities.getWaterHeight(ts, constSpeed, now);
             System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
@@ -121,7 +128,8 @@ public class SampleMain
           ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR));
           if (ts != null)
           {
-            TimeZone tz = TimeZone.getDefault();
+//          TimeZone tz = TimeZone.getDefault();
+            now.setTimeZone(TimeZone.getTimeZone(ts.getTimeZone()));
             before = System.currentTimeMillis();
             for (int h=0; h<24; h++)
             {
@@ -135,7 +143,7 @@ public class SampleMain
                 double wh = TideUtilities.getWaterHeight(ts, constSpeed, cal);
                 TimeZone.setDefault(TimeZone.getTimeZone("127")); // for UTC display
                 System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + cal.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
-                TimeZone.setDefault(tz);
+//              TimeZone.setDefault(tz);
               }
             }
             after = System.currentTimeMillis();
@@ -283,6 +291,7 @@ public class SampleMain
 
         if (true)
         {
+          now.setTimeZone(TimeZone.getTimeZone(ts.getTimeZone()));
           double[] mm = TideUtilities.getMinMaxWH(ts, constSpeed, now);
           System.out.println("At " + location + " in " + now.get(Calendar.YEAR) + ", min : " + TideUtilities.DF22PLUS.format(mm[TideUtilities.MIN_POS]) + " " + ts.getUnit() + ", max : " + TideUtilities.DF22PLUS.format(mm[TideUtilities.MAX_POS]) + " " + ts.getDisplayUnit());
         }
@@ -392,7 +401,7 @@ public class SampleMain
           for (TimedValue tv : timeAL)
             System.out.println(tv.getType() + " " + SDF.format(tv.getCalendar().getTime()) + " : " + TideUtilities.DF22PLUS.format(tv.getValue()) + " " + ts.getDisplayUnit());
         }
-        if (true)
+        if (false)
         {
           List<String[]> hcList = TideUtilities.getStationHarmonicConstituents(ts, constSpeed);
           for (String[] line  : hcList)
@@ -400,7 +409,7 @@ public class SampleMain
         }
         if (false && ts != null)
         {
-          TimeZone tz = TimeZone.getDefault();
+//        TimeZone tz = TimeZone.getDefault();
           before = System.currentTimeMillis();
           for (int h=0; h<24; h++)
           {
@@ -414,7 +423,7 @@ public class SampleMain
               double wh = TideUtilities.getWaterHeight(ts, constSpeed, cal);
               TimeZone.setDefault(TimeZone.getTimeZone("127")); // for UTC display
               System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + cal.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
-              TimeZone.setDefault(tz);
+//            TimeZone.setDefault(tz);
             }
           }
           after = System.currentTimeMillis();
@@ -424,7 +433,7 @@ public class SampleMain
 //        System.out.println(location + " not found...");
       }
       
-      if (true)
+      if (false)
       {
         System.out.println("-- Building Station Tree");
         TreeMap<String, TideUtilities.StationTreeNode> stationTree = TideUtilities.buildStationTree();
