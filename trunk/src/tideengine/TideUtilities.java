@@ -92,10 +92,16 @@ public class TideUtilities
     COEFF_DEFINITION.put("MS4",  "Shallow water quarter diurnal constituent");
   }
   
-  public final static String[] ORDERED_COEFF = { "M2", "S2", "N2", "K1", "M4", "O1", "M6", "MK3", "S4", "MN4", 
-                                                 "NU2", "S6", "MU2", "2N2", "OO1", "LAM2", "S1", "M1", "J1", 
-                                                 "MM", "SSA", "SA", "MSF", "MF", "RHO", "Q1", "T2", "R2", "2Q1", 
-                                                 "P1", "2SM2", "M3", "L2", "2MK3", "K2", "M8", "MS4" };
+  private final static String[] ORDERED_COEFF = { "M2",  "S2",   "N2",  "K1",   "M4",  "O1",  "M6",   "MK3", "S4", 
+                                                  "MN4", "NU2",  "S6",  "MU2",  "2N2", "OO1", "LAM2", "S1",  "M1", 
+                                                  "J1",  "MM",   "SSA", "SA",   "MSF", "MF",  "RHO",  "Q1",  "T2", 
+                                                  "R2",  "2Q1",  "P1",  "2SM2", "M3",  "L2",  "2MK3", "K2",  "M8", 
+                                                  "MS4" };
+  
+  public static String[] getOrderedCoeff()
+  {
+    return ORDERED_COEFF.clone();  
+  }
   
   public static TreeMap<String, StationTreeNode> buildStationTree()
   {
@@ -208,6 +214,8 @@ public class TideUtilities
     value = stationBaseHeight;
     for (int i=0; i<constSpeed.size(); i++)
     {
+      assert(ts.getHarmonics().get(i).getName().equals(constSpeed.get(i).getName()));
+      
       if (!ts.getHarmonics().get(i).getName().equals(constSpeed.get(i).getName()))
         System.out.println("..... Mismatch!!!");
       value += (ts.getHarmonics().get(i).getAmplitude() * Math.cos(constSpeed.get(i).getValue() * timeOffset - ts.getHarmonics().get(i).getEpoch()));
