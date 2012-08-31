@@ -33,7 +33,7 @@ dependencies {
   compile project(':CoreUtilities')
 }
 
-task copyResources(type: Copy) << {
+task copyResources(type: Copy) {
   description = 'Copies non-java resources in the output directory before the jar task (png, xml, xsd, ttf, properties, etc)'
   from 'src'
   into 'build/classes/main'
