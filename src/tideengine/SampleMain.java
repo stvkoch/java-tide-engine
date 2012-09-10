@@ -36,8 +36,7 @@ public class SampleMain
   //    String harmonicName2 = "harmonics-dwf-20110410-nonfree.txt";
         BackEndXMLTideComputer.setVerbose(true);
         long before = System.currentTimeMillis();
-        try {
-          BackEndXMLTideComputer.generateXML(harmonicName); } catch (Exception ex) { ex.printStackTrace(); }
+        try { BackEndXMLTideComputer.generateXML(harmonicName); } catch (Exception ex) { ex.printStackTrace(); }
   //    try { BackEndTideComputer.generateXML(new String[] { harmonicName1, 
   //                                                         harmonicName2 }); } catch (Exception ex) { ex.printStackTrace(); }
         long after = System.currentTimeMillis();
