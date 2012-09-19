@@ -6,12 +6,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStream;
 
 import java.net.URL;
 
 import java.util.ArrayList;
-
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -35,6 +37,10 @@ public class BackEndXMLTideComputer
   public final static String CONSTITUENT_FILE = "xml.data" + File.separator + "constituents.xml";
   public final static String STATION_FILE     = "xml.data" + File.separator + "stations.xml";
   
+  public final static String ARCHIVE_STREAM      = "xml/xml.zip"; // BackEndXMLTideComputer.class.getResourceAsStream("xml/xml.zip");
+  public final static String CONSTITUENTS_EMTRY  = "constituents.xml";
+  public final static String STATIONS_ENTRY      = "stations.xml";
+
   private static DOMParser parser = new DOMParser();
   private static boolean verbose  = false;
     
@@ -376,15 +382,26 @@ public class BackEndXMLTideComputer
     bw.close();
     if (verbose) System.out.println("Done, " + nbStations + " Station(s)");
   }
+  
+  public static XMLDocument loadDOM(String zipStream, String entryName) throws Exception
+  {    
+    return loadDOM(getZipInputStream(zipStream, entryName));
+  }
     
-  public static XMLDocument loadDOM(String resource) throws Exception 
+  public static XMLDocument loadDOM(String resource) throws Exception
+  {
+    InputStream is = new FileInputStream(new File(resource));
+    return loadDOM(is);
+  }
+
+  public static XMLDocument loadDOM(InputStream resource) throws Exception 
   {
     XMLDocument doc = null;
     try
     {
       synchronized (parser)
       {
-        parser.parse(new FileReader(resource));
+        parser.parse(resource);
         doc = parser.getDocument();
       }
     }
@@ -448,8 +465,76 @@ public class BackEndXMLTideComputer
   {
     return findTideStation(stationName, year, constituents, BackEndTideComputer.getStationFileLocation());
   }
+
+  public static InputStream getZipInputStream(String zipStream, String entryName) throws Exception
+  {
+    ZipInputStream zip = new ZipInputStream(BackEndXMLTideComputer.class.getResourceAsStream(zipStream));
+    InputStream is = null;
+    boolean go = true;
+    while (go)
+    {
+      ZipEntry ze = zip.getNextEntry();
+      if (ze == null)
+        go = false;
+      else
+      {
+        if (ze.getName().equals(entryName))
+        {
+          is = zip;
+          go = false;
+        }
+      }
+    }
+    if (is == null)
+    {
+      throw new RuntimeException("Entry " + entryName + " not found in " + zipStream.toString());
+    }
+    return is;    
+  }
   
+  public static InputSource getZipInputSource(String zipStream, String entryName) throws Exception
+  {
+    ZipInputStream zip = new ZipInputStream(BackEndXMLTideComputer.class.getResourceAsStream(zipStream));
+    InputSource is = null;
+    boolean go = true;
+    while (go)
+    {
+      ZipEntry ze = zip.getNextEntry();
+      if (ze == null)
+        go = false;
+      else
+      {
+        if (ze.getName().equals(entryName))
+        {
+          is = new InputSource(zip);
+          is.setEncoding("ISO-8859-1");
+          go = false;
+        }
+      }
+    }
+    if (is == null)
+    {
+      throw new RuntimeException("Entry " + entryName + " not found in " + zipStream.toString());
+    }
+    return is;    
+  }
+  
+  public static TideStation findTideStation(String stationName, int year, XMLDocument constituents, String zipStream, String entryName) throws Exception
+  {
+    InputSource is = null;
+    try { is = getZipInputSource(zipStream, entryName); } catch (Exception ex) { throw new RuntimeException(ex); }
+    return findTideStation(stationName, year, constituents, is);
+    
+  }
+
   public static TideStation findTideStation(String stationName, int year, XMLDocument constituents, String stationFile) throws Exception
+  {
+    InputSource is = new InputSource(new FileInputStream(new File(stationFile)));
+    is.setEncoding("ISO-8859-1");
+    return findTideStation(stationName, year, constituents, is);
+  }
+
+  public static TideStation findTideStation(String stationName, int year, XMLDocument constituents, InputSource is) throws Exception
   {
     TideStation ts = null;
     long before = System.currentTimeMillis();
@@ -460,9 +545,9 @@ public class BackEndXMLTideComputer
       SAXParser saxParser = factory.newSAXParser();
       
       sf.setStationName(stationName);
-      InputSource is = new InputSource(new FileInputStream(new File(stationFile)));
-      is.setEncoding("ISO-8859-1");
-      saxParser.parse(is, sf);       
+//    InputSource is = new InputSource(new FileInputStream(new File(stationFile)));
+//    is.setEncoding("ISO-8859-1");
+      saxParser.parse(is, sf);
     }
     catch (DoneWithSiteException dwse)
     {
@@ -505,8 +590,8 @@ public class BackEndXMLTideComputer
     {
       SAXParserFactory factory = SAXParserFactory.newInstance();
       SAXParser saxParser = factory.newSAXParser();      
-      InputSource is = new InputSource(new FileInputStream(new File(STATION_FILE)));
-      is.setEncoding("ISO-8859-1");
+      InputSource is = // new InputSource(new FileInputStream(new File(STATION_FILE)));
+                       getZipInputSource(BackEndXMLTideComputer.ARCHIVE_STREAM, BackEndXMLTideComputer.STATIONS_ENTRY);
       saxParser.parse(is, sf);       
     }
     catch (Exception ex)

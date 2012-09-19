@@ -1,7 +1,7 @@
 package tideengine;
 
-import coreutilities.sql.SQLUtil;
 
+import coreutilities.sql.SQLUtil;
 import coreutilities.sql.SQLiteUtil;
 
 import java.io.File;
@@ -10,12 +10,11 @@ import java.security.AccessControlException;
 
 import java.sql.Connection;
 
-import java.util.ArrayList;
-
 import java.util.List;
 import java.util.TreeMap;
 
 import oracle.xml.parser.v2.XMLDocument;
+
 
 /**
  * Access method agnostic front end.
@@ -34,14 +33,14 @@ public class BackEndTideComputer
   }
   private static String sqliteDb = "sqlite" + File.separator + "tidedb";
   
-  public static final int XML_OPTION = 0;
-  public static final int SQL_OPTION = 1;
+  public static final int XML_OPTION    = 0;
+  public static final int SQL_OPTION    = 1;
   public static final int SQLITE_OPTION = 2;
   
   private static int CHOSEN_OPTION = XML_OPTION;
 
-  private static String constituentFileLocation = "xml.data" + File.separator + "constituents.xml";
-  private static String stationFileLocation     = "xml.data" + File.separator + "stations.xml";
+  private static String constituentFileLocation = BackEndXMLTideComputer.CONSTITUENT_FILE; // "xml.data" + File.separator + "constituents.xml";
+  private static String stationFileLocation     = BackEndXMLTideComputer.STATION_FILE;     // "xml.data" + File.separator + "stations.xml";
   
   private static XMLDocument constituents = null;  
   private static Connection conn = null;
@@ -82,7 +81,8 @@ public class BackEndTideComputer
         }
         break;
       case XML_OPTION:
-        constituents = BackEndXMLTideComputer.loadDOM(BackEndXMLTideComputer.CONSTITUENT_FILE);
+//      constituents = BackEndXMLTideComputer.loadDOM(constituentFileLocation);
+        constituents = BackEndXMLTideComputer.loadDOM(BackEndXMLTideComputer.ARCHIVE_STREAM, BackEndXMLTideComputer.CONSTITUENTS_EMTRY);
         break;
     }
   }
@@ -147,7 +147,7 @@ public class BackEndTideComputer
     switch (CHOSEN_OPTION)
     {
       case XML_OPTION:
-        ts = BackEndXMLTideComputer.findTideStation(stationName, year, constituents);
+        ts = BackEndXMLTideComputer.findTideStation(stationName, year, constituents, BackEndXMLTideComputer.ARCHIVE_STREAM, BackEndXMLTideComputer.STATIONS_ENTRY);
         break;
       case SQL_OPTION:
       case SQLITE_OPTION:
@@ -180,7 +180,15 @@ public class BackEndTideComputer
     switch (CHOSEN_OPTION)
     {
       case XML_OPTION:
-        st = TideUtilities.buildStationTree(stationFileLocation);
+//      st = TideUtilities.buildStationTree(stationFileLocation);
+        try
+        {
+          st = TideUtilities.buildStationTree(BackEndXMLTideComputer.getZipInputSource(BackEndXMLTideComputer.ARCHIVE_STREAM, BackEndXMLTideComputer.STATIONS_ENTRY));
+        }
+        catch (Exception ex)
+        {
+          throw new RuntimeException(ex);
+        }
         break;
       case SQL_OPTION:
       case SQLITE_OPTION:
