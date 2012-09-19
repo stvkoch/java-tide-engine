@@ -55,7 +55,7 @@ public class SampleMain
         
         Calendar now = GregorianCalendar.getInstance();
         String location = null;
-        if (false)
+        if (true)
         {
           location = "Port Townsend";          
           ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR));
@@ -73,7 +73,7 @@ public class SampleMain
               System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(TideUtilities.getWaterHeightIn(wh, ts, TideStation.METERS)) + " " + TideStation.METERS);
           }
         }
-        if (false)
+        if (true)
         {
           location = "Fare Ute";
           ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR));

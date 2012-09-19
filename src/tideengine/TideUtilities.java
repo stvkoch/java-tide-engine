@@ -3,6 +3,8 @@ package tideengine;
 import java.io.File;
 import java.io.FileInputStream;
 
+import java.net.URL;
+
 import java.sql.Connection;
 
 import java.sql.ResultSet;
@@ -110,6 +112,21 @@ public class TideUtilities
   
   public static TreeMap<String, StationTreeNode> buildStationTree(String stationFileName)
   {
+    InputSource is = null;
+    try
+    {
+      is = new InputSource(new FileInputStream(new File(stationFileName)));
+      is.setEncoding("ISO-8859-1");
+    }
+    catch (Exception ex)
+    {
+      throw new RuntimeException(ex);
+    }
+    return buildStationTree(is);
+  }
+  
+  public static TreeMap<String, StationTreeNode> buildStationTree(InputSource stationFileInputSource)
+  {
     TreeMap<String, StationTreeNode> set = new TreeMap<String, StationTreeNode>();
     
     long before = System.currentTimeMillis();
@@ -117,13 +134,9 @@ public class TideUtilities
     try
     {
       SAXParserFactory factory = SAXParserFactory.newInstance();
-      SAXParser saxParser = factory.newSAXParser();
-      
-      sf.setTreeToPopulate(set);
-      
-      InputSource is = new InputSource(new FileInputStream(new File(stationFileName)));
-      is.setEncoding("ISO-8859-1");
-      saxParser.parse(is, sf);       
+      SAXParser saxParser = factory.newSAXParser();      
+      sf.setTreeToPopulate(set);      
+      saxParser.parse(stationFileInputSource, sf);
     }
     catch (Exception ex)
     {
