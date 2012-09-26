@@ -3,10 +3,7 @@ package tideengine;
 import java.io.File;
 import java.io.FileInputStream;
 
-import java.net.URL;
-
 import java.sql.Connection;
-
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -18,7 +15,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -30,6 +26,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
 
 public class TideUtilities
 {

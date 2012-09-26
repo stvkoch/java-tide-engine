@@ -369,6 +369,9 @@ public class BackEndXMLTideComputer
   
   public static class DoneWithSiteException extends SAXException
   {
+    @SuppressWarnings("compatibility:4149777882983149063")
+    public final static long serialVersionUID = 1L;
+    
     public DoneWithSiteException(String s)
     {
       super(s);
