@@ -432,7 +432,7 @@ public class SampleMain
       if (false)
       {
         System.out.println("-- Building Station Tree");
-        TreeMap<String, TideUtilities.StationTreeNode> stationTree = TideUtilities.buildStationTree();
+     /* TreeMap<String, TideUtilities.StationTreeNode> stationTree = */ TideUtilities.buildStationTree();
         System.out.println("Done");
       }
       BackEndTideComputer.disconnect();
