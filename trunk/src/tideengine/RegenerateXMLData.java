@@ -2,6 +2,7 @@ package tideengine;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
@@ -15,7 +16,15 @@ import org.w3c.dom.Text;
 public class RegenerateXMLData
 {
   private final static boolean verbose = true;
-  
+
+  // Those two are used only to generate and write the data files.
+  public final static String CONSTITUENT_FILE = "xml.data" + File.separator + "constituents.xml";
+  public final static String STATION_FILE     = "xml.data" + File.separator + "stations.xml";
+  // Non final.
+  private static String constituentFileLocation = RegenerateXMLData.CONSTITUENT_FILE;
+  private static String stationFileLocation     = RegenerateXMLData.STATION_FILE;
+
+
   public static void main(String[] args) throws Exception
   {
     System.out.println(args.length + " Argument(s)...");
@@ -24,7 +33,7 @@ public class RegenerateXMLData
     String harmonicName = "harmonics_06_14_2004_fr.txt";
 //  String harmonicName1 = "harmonics-dwf-20110410-free.txt";
 //  String harmonicName2 = "harmonics-dwf-20110410-nonfree.txt";
-    
+
     BackEndXMLTideComputer.setVerbose(true);
     long before = System.currentTimeMillis();
     try { generateXML(harmonicName); } catch (Exception ex) { ex.printStackTrace(); }
@@ -37,10 +46,10 @@ public class RegenerateXMLData
   {
     generateXML(new String[] { harmonicName });
   }
-  
+
   /**
    * Generates XML files after txt files (like harmonics_06_14_2004.txt)
-   * 
+   *
    * @param harmonicName
    * @throws Exception
    */
@@ -48,7 +57,7 @@ public class RegenerateXMLData
   {
     final String LONGITUDE = "!longitude:";
     final String LATITUDE  = "!latitude:";
-    
+
     BackEndXMLTideComputer tc = new BackEndXMLTideComputer();
     BufferedWriter bw = null;
     XMLDocument stationDoc = null;
@@ -58,14 +67,14 @@ public class RegenerateXMLData
     {
       URL harmonic = tc.getClass().getResource(harmonicName[h]);
       if (verbose) System.out.println("URL:" + harmonic.toString());
-  
+
       BufferedReader br = new BufferedReader(new FileReader(harmonic.getFile()));
-      
+
   //  String idxLine = Integer.toString(0) + "\t" + harmonicName + "";
   //  bw.write(idxLine + "\n");
-      
+
       String line = "";
-      
+
       XMLDocument doc = new XMLDocument();
       XMLElement root = (XMLElement)doc.createElement("constituents");
       doc.appendChild(root);
@@ -114,7 +123,7 @@ public class RegenerateXMLData
             Text valueValue = doc.createTextNode("#text");
             valueValue.setNodeValue(coeffValue);
             value.appendChild(valueValue);
-            
+
             line = br.readLine();
             if (line == null || line.startsWith("#"))
               loopOnCoeff = false;
@@ -130,7 +139,7 @@ public class RegenerateXMLData
           }
           int yearOrigin = Integer.parseInt(line);
           // Look for the number of years in the file for equilibrium
-          line = br.readLine();        
+          line = br.readLine();
           keepLooping = true;
           while (keepLooping)
           {
@@ -186,7 +195,7 @@ public class RegenerateXMLData
             }
           }
           // Look for the number of years in the file for node factors
-          line = br.readLine();        
+          line = br.readLine();
           keepLooping = true;
           while (keepLooping)
           {
@@ -245,20 +254,20 @@ public class RegenerateXMLData
       }
       br.close();
       // Spit out result here
-      bw = new BufferedWriter(new FileWriter(BackEndXMLTideComputer.CONSTITUENT_FILE));
+      bw = new BufferedWriter(new FileWriter(CONSTITUENT_FILE));
       doc.print(bw);
       bw.close();
-      
+
       // Step two: Stations
       if (stationDoc == null)
       {
-        stationDoc = new XMLDocument();  
+        stationDoc = new XMLDocument();
         root = (XMLElement)stationDoc.createElement("stations");
         stationDoc.appendChild(root);
       }
       else
         root = (XMLElement)stationDoc.getDocumentElement();
-  
+
       br = new BufferedReader(new FileReader(harmonic.getFile())); // Re-open
       line = "";
       while (line != null)
@@ -278,9 +287,9 @@ public class RegenerateXMLData
             {
               XMLElement station = (XMLElement)stationDoc.createElement("station");
               root.appendChild(station);
-              
+
               XMLElement position = (XMLElement)stationDoc.createElement("position");
-              
+
               double lat = Double.parseDouble(line.substring(line.indexOf(LATITUDE) + LATITUDE.length()));
   //          System.out.println("Latitude:" + lat);
               position.setAttribute("latitude", Double.toString(lat));
@@ -288,9 +297,9 @@ public class RegenerateXMLData
               // Station name
               line = br.readLine();
               station.setAttribute("name", line.trim());
-              String[] stationElement = line.split(",");      
+              String[] stationElement = line.split(",");
               XMLElement names = (XMLElement)stationDoc.createElement("name-collection");
-              
+
               for (int i=stationElement.length-1; i>=0; i--)
               {
   //            System.out.println("-> " + stationElement[i].trim());
@@ -316,15 +325,15 @@ public class RegenerateXMLData
               String unit = bh[1];
               baseHeight.setAttribute("value", val);
               baseHeight.setAttribute("unit", unit);
-              
+
               station.appendChild(names);
               station.appendChild(position);
               station.appendChild(tz);
               station.appendChild(baseHeight);
-              
+
               XMLElement data = (XMLElement)stationDoc.createElement("station-data");
               station.appendChild(data);
-              
+
               // Now, coefficients
               boolean keepLooping = true;
               int rnk = 1;
@@ -337,7 +346,7 @@ public class RegenerateXMLData
                 {
                   XMLElement harm = (XMLElement)stationDoc.createElement("harmonic-coeff");
                   data.appendChild(harm);
-                  harm.setAttribute("rnk", Integer.toString(rnk++));                
+                  harm.setAttribute("rnk", Integer.toString(rnk++));
                   String[] coeffElement = line.split(" ");
                   harm.setAttribute("name", coeffElement[0]);
   //              System.out.print(" -> Coeff: ");
@@ -360,16 +369,35 @@ public class RegenerateXMLData
             else
               System.out.println("Warning! No " + LATITUDE + " found after " + LONGITUDE);
           }
-          // else keep looping          
+          // else keep looping
         }
       }
       br.close();
     }
     // Spit out result here
-    bw = new BufferedWriter(new FileWriter(BackEndXMLTideComputer.STATION_FILE));
+    bw = new BufferedWriter(new FileWriter(STATION_FILE));
     stationDoc.print(bw);
     bw.close();
     if (verbose) System.out.println("Done, " + nbStations + " Station(s)");
   }
-  
+
+  public static void setConstituentFileLocation(String cfl)
+  {
+    constituentFileLocation = cfl;
+  }
+
+  public static void setStationFileLocation(String sfl)
+  {
+    stationFileLocation = sfl;
+  }
+
+  public static String getStationFileLocation()
+  {
+    return stationFileLocation;
+  }
+
+  public static String getConstituentFileLocation()
+  {
+    return constituentFileLocation;
+  }
 }

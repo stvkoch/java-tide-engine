@@ -39,9 +39,6 @@ public class BackEndTideComputer
   
   private static int CHOSEN_OPTION = XML_OPTION;
 
-  private static String constituentFileLocation = BackEndXMLTideComputer.CONSTITUENT_FILE; // "xml.data" + File.separator + "constituents.xml";
-  private static String stationFileLocation     = BackEndXMLTideComputer.STATION_FILE;     // "xml.data" + File.separator + "stations.xml";
-  
   private static XMLDocument constituents = null;  
   private static Connection conn = null;
   
@@ -215,25 +212,5 @@ public class BackEndTideComputer
   public static void setDbLocation(String dbLocation)
   {
     BackEndTideComputer.dbLocation = dbLocation;
-  }
-
-  public static void setConstituentFileLocation(String constituentFileLocation)
-  {
-    BackEndTideComputer.constituentFileLocation = constituentFileLocation;
-  }
-
-  public static void setStationFileLocation(String stationFileLocation)
-  {
-    BackEndTideComputer.stationFileLocation = stationFileLocation;
-  }
-
-  public static String getStationFileLocation()
-  {
-    return stationFileLocation;
-  }
-
-  public static String getConstituentFileLocation()
-  {
-    return constituentFileLocation;
   }
 }

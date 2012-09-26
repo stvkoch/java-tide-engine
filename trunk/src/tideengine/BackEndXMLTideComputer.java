@@ -26,11 +26,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class BackEndXMLTideComputer
 {
-  // Those two are used only to generate and write the data files.
-  public final static String CONSTITUENT_FILE = "xml.data" + File.separator + "constituents.xml";
-  public final static String STATION_FILE     = "xml.data" + File.separator + "stations.xml";
-  
-  public final static String ARCHIVE_STREAM      = "xml/xml.zip"; // BackEndXMLTideComputer.class.getResourceAsStream("xml/xml.zip");
+  public final static String ARCHIVE_STREAM      = "xml/xml.zip"; 
   public final static String CONSTITUENTS_EMTRY  = "constituents.xml";
   public final static String STATIONS_ENTRY      = "stations.xml";
 
@@ -117,7 +113,7 @@ public class BackEndXMLTideComputer
   
   public static TideStation findTideStation(String stationName, int year, XMLDocument constituents) throws Exception
   {
-    return findTideStation(stationName, year, constituents, BackEndTideComputer.getStationFileLocation());
+    return findTideStation(stationName, year, constituents, RegenerateXMLData.getStationFileLocation());
   }
 
   public static InputStream getZipInputStream(String zipStream, String entryName) throws Exception
