@@ -107,7 +107,7 @@ public class TideUtilities
   
   public static TreeMap<String, StationTreeNode> buildStationTree()
   {
-    return buildStationTree(BackEndXMLTideComputer.STATION_FILE);
+    return buildStationTree(RegenerateXMLData.STATION_FILE);
   }
   
   public static TreeMap<String, StationTreeNode> buildStationTree(String stationFileName)
