@@ -10,6 +10,10 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.fusesource.jansi.AnsiConsole;
+import static org.fusesource.jansi.Ansi.*;
+import static org.fusesource.jansi.Ansi.Color.*;
+
 
 public class SampleTwo
 {
@@ -20,13 +24,17 @@ public class SampleTwo
   
   public static void main(String[] args) throws Exception
   {
-    System.out.println(args.length + " Argument(s)...");
+    AnsiConsole.systemInstall();
+//  System.out.println( ansi().bg(CYAN).fg(RED).bold().a("Hello").fg(GREEN).a(" World").reset() );
+    System.out.println(ansi().fg(WHITE).bold().a(Integer.toString(args.length)).reset().a(" Argument(s)...").reset());
 
-    System.out.println("XML Tests");
+    System.out.println(ansi().fg(GREEN).a("XML Tests").reset());
     BackEndTideComputer.connect(BackEndTideComputer.XML_OPTION);
     BackEndTideComputer.setVerbose(false);
     
     List<Coefficient> constSpeed = BackEndTideComputer.buildSiteConstSpeed();
+
+    System.out.println(ansi().fg(YELLOW));
     System.out.println("SpeedCoefficients OK");
     Calendar now = GregorianCalendar.getInstance(); // No need to set a time zone. It's "now" everywhere.
 
@@ -38,6 +46,8 @@ public class SampleTwo
     tideTest("Oyster Point Marina, San Francisco Bay, California", constSpeed, now);
 
     BackEndTideComputer.disconnect();
+    System.out.println(ansi().reset());
+    AnsiConsole.systemUninstall();
   }
   
   private static void tideTest(String location, List<Coefficient> constSpeed, Calendar now) throws Exception
@@ -137,8 +147,8 @@ public class SampleTwo
         }
       }
       after = System.currentTimeMillis();
-      System.out.println("High-Low water Calculation took " + Long.toString(after - before) + " ms (" + nbIteration + " iteration(s))");
-      System.out.println("-- " + location + " --");
+      System.out.println(ansi().a("High-Low water Calculation took ").fg(RED).a(Long.toString(after - before) + " ms").reset().fg(YELLOW).a(" (" + nbIteration + " iteration(s))"));
+      System.out.println(ansi().a("-- ").fg(CYAN).a(location).fg(YELLOW).a(" --"));
     
       List<TimedValue> timeAL = new ArrayList<TimedValue>(4);
       if (low1Cal != null)
