@@ -30,6 +30,7 @@ repositories {
 dependencies {
   testCompile 'junit:junit:4.8.2'
   compile 'oracle:xmlparser:v2'
+  compile 'jansi:ansi:1.9'
   compile project(':CoreUtilities')
 }
 
