@@ -15,6 +15,9 @@ import java.util.TreeMap;
 
 import oracle.xml.parser.v2.XMLDocument;
 
+import tideengine.serialized.Constituents;
+import tideengine.serialized.Stations;
+
 
 /**
  * Access method agnostic front end.
@@ -33,14 +36,17 @@ public class BackEndTideComputer
   }
   private static String sqliteDb = "sqlite" + File.separator + "tidedb";
   
-  public static final int XML_OPTION    = 0;
-  public static final int SQL_OPTION    = 1;
-  public static final int SQLITE_OPTION = 2;
+  public static final int XML_OPTION        = 0;
+  public static final int SQL_OPTION        = 1;
+  public static final int SQLITE_OPTION     = 2;
+  public static final int SERIALIZED_OPTION = 3;
   
   private static int CHOSEN_OPTION = XML_OPTION;
 
   private static XMLDocument constituents = null;  
   private static Connection conn = null;
+  private static Constituents constituentsObject = null;
+  private static Stations stationsObject = null;
   
   public static void connect(int option) throws Exception
   {
@@ -79,7 +85,11 @@ public class BackEndTideComputer
         break;
       case XML_OPTION:
 //      constituents = BackEndXMLTideComputer.loadDOM(constituentFileLocation);
-        constituents = BackEndXMLTideComputer.loadDOM(BackEndXMLTideComputer.ARCHIVE_STREAM, BackEndXMLTideComputer.CONSTITUENTS_EMTRY);
+        constituents = BackEndXMLTideComputer.loadDOM(BackEndXMLTideComputer.ARCHIVE_STREAM, BackEndXMLTideComputer.CONSTITUENTS_ENTRY);
+        break;
+      case SERIALIZED_OPTION:
+        constituentsObject = (Constituents)BackEndSerializedTideComputer.loadObject(BackEndSerializedTideComputer.ARCHIVE_STREAM, BackEndSerializedTideComputer.CONSTITUENTS_ENTRY);
+        stationsObject = (Stations)BackEndSerializedTideComputer.loadObject(BackEndSerializedTideComputer.ARCHIVE_STREAM, BackEndSerializedTideComputer.STATIONS_ENTRY);
         break;
     }
   }
@@ -102,6 +112,9 @@ public class BackEndTideComputer
       case SQLITE_OPTION:
         constSpeed = BackEndSQLTideComputer.buildSiteConstSpeed(conn);
         break;
+      case SERIALIZED_OPTION:
+        constSpeed = BackEndSerializedTideComputer.buildSiteConstSpeed(constituentsObject);
+        break;
     }
     return constSpeed;
   }
@@ -117,6 +130,9 @@ public class BackEndTideComputer
       case SQL_OPTION:
       case SQLITE_OPTION:
         d = BackEndSQLTideComputer.getAmplitudeFix(conn, year, name);
+        break;
+      case SERIALIZED_OPTION:
+        d = BackEndSerializedTideComputer.getAmplitudeFix(constituentsObject, year, name);
         break;
     }
     return d;
@@ -134,6 +150,9 @@ public class BackEndTideComputer
       case SQLITE_OPTION:
         d = BackEndSQLTideComputer.getEpochFix(conn, year, name);
         break;
+      case SERIALIZED_OPTION:
+        d = BackEndSerializedTideComputer.getEpochFix(constituentsObject, year, name);
+        break;
     }
     return d;
   }
@@ -150,6 +169,9 @@ public class BackEndTideComputer
       case SQLITE_OPTION:
         ts = BackEndSQLTideComputer.findTideStation(stationName, year, conn);
         break;
+      case SERIALIZED_OPTION:
+        ts = BackEndSerializedTideComputer.findTideStation(stationName, year, constituentsObject, stationsObject);
+        break;
     }
     return ts;
   }
@@ -165,6 +187,9 @@ public class BackEndTideComputer
       case SQL_OPTION:
       case SQLITE_OPTION:
         alts = BackEndSQLTideComputer.getStationData(conn);
+        break;
+      case SERIALIZED_OPTION:
+        alts = BackEndSerializedTideComputer.getStationData(stationsObject);
         break;
     }
     return alts;
@@ -191,6 +216,9 @@ public class BackEndTideComputer
       case SQLITE_OPTION:
         st = TideUtilities.buildStationTree(conn);
         break;
+      case SERIALIZED_OPTION:
+        st = TideUtilities.buildStationTree(stationsObject);
+        break;
     }      
     return st;
   }
@@ -205,6 +233,9 @@ public class BackEndTideComputer
         break;
       case XML_OPTION:
         BackEndXMLTideComputer.setVerbose(v);
+        break;
+      case SERIALIZED_OPTION:
+        BackEndSerializedTideComputer.setVerbose(v);
         break;
     }
   }

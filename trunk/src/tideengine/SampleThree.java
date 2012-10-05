@@ -17,7 +17,7 @@ import static org.fusesource.jansi.Ansi.*;
 import static org.fusesource.jansi.Ansi.Color.*;
 
 
-public class SampleTwo
+public class SampleThree
 {
   private final static SimpleDateFormat SDF_FULL = new SimpleDateFormat("yyyy-MMM-dd HH:mm z (Z)");
 //private final static SimpleDateFormat SDF      = new SimpleDateFormat("yyyy-MMM-dd HH:mm");
@@ -30,9 +30,9 @@ public class SampleTwo
 //  System.out.println( ansi().bg(CYAN).fg(RED).bold().a("Hello").fg(GREEN).a(" World").reset() );
     System.out.println(ansi().fg(WHITE).bold().a(Integer.toString(args.length)).reset().a(" Argument(s)...").reset());
 
-    System.out.println(ansi().fg(GREEN).a("XML Tests").reset());
-    BackEndTideComputer.connect(BackEndTideComputer.XML_OPTION);
+    System.out.println(ansi().fg(GREEN).a("Serialized Tests").reset());    
     BackEndTideComputer.setVerbose(true);
+    BackEndTideComputer.connect(BackEndTideComputer.SERIALIZED_OPTION);
     
     List<Coefficient> constSpeed = BackEndTideComputer.buildSiteConstSpeed();
 
@@ -52,7 +52,7 @@ public class SampleTwo
       System.out.println("-- Building Station Tree");
       TreeMap<String, TideUtilities.StationTreeNode> stationTree = BackEndTideComputer.buildStationTree();
       System.out.println(stationTree.size() + " station(s) in the tree (level one)");
-    //    TideUtilities.renderTree(stationTree, 0);
+//    TideUtilities.renderTree(stationTree, 0);
       System.out.println("Done");
     }
 
