@@ -27,6 +27,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import tideengine.serialized.Stations;
+
 
 public class TideUtilities
 {
@@ -172,6 +174,46 @@ public class TideUtilities
       }
       rs.close();
       stmt.close();
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    long after = System.currentTimeMillis();
+    if (verbose) System.out.println("Populating the tree took " + Long.toString(after - before) + " ms");
+    
+    return set;
+  }
+
+  public static TreeMap<String, StationTreeNode> buildStationTree(Stations stations) 
+  {
+    TreeMap<String, StationTreeNode> set = new TreeMap<String, StationTreeNode>();
+    
+    long before = System.currentTimeMillis();
+    try
+    {
+      Set<String> keys = stations.getStations().keySet();
+      for (String k : keys)
+      {
+        Stations.Station station = stations.getStations().get(k);
+        TideStation ts = new TideStation();
+        ts.setFullName(station.getFullName());
+        ts.setBaseHeight(station.getBaseHeight().getHeight());
+        ts.setUnit(station.getBaseHeight().getUnit());
+        ts.setLatitude(station.getPosition().getLatitude());
+        ts.setLongitude(station.getPosition().getLongitude());
+        ts.setTimeZone(station.getTz().getID());
+        String[] np = ts.getFullName().split(",");
+        for (int i=0; i<np.length; i++)
+          ts.getNameParts().add(np[(np.length - 1) - i]);
+//        Set<String> ckeys = station.getHarmonicCoeffList().keySet();
+//        for (String ck : ckeys)
+//        {
+//          Stations.HarmonicCoeff hc = station.getHarmonicCoeffList().get(ck);
+//          ts.getHarmonics().add(new Harmonic(hc.getName(), hc.getAmplitude(), hc.getEpoch()));
+//        }    
+        addStationToTree(ts, set);
+      }
     }
     catch (Exception ex)
     {

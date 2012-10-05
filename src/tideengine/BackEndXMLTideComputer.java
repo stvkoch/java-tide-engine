@@ -27,7 +27,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class BackEndXMLTideComputer
 {
   public final static String ARCHIVE_STREAM      = "xml/xml.zip"; 
-  public final static String CONSTITUENTS_EMTRY  = "constituents.xml";
+  public final static String CONSTITUENTS_ENTRY  = "constituents.xml";
   public final static String STATIONS_ENTRY      = "stations.xml";
 
   private static DOMParser parser = new DOMParser();
