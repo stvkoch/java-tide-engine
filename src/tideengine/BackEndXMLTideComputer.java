@@ -1,22 +1,13 @@
 package tideengine;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import oracle.xml.parser.v2.DOMParser;
-import oracle.xml.parser.v2.XMLDocument;
-import oracle.xml.parser.v2.XMLElement;
-
-import org.w3c.dom.NodeList;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -30,223 +21,71 @@ public class BackEndXMLTideComputer
   public final static String CONSTITUENTS_ENTRY  = "constituents.xml";
   public final static String STATIONS_ENTRY      = "stations.xml";
 
-  private static DOMParser parser = new DOMParser();
   private static boolean verbose  = false;
     
-  public static XMLDocument loadDOM(String zipStream, String entryName) throws Exception
-  {    
-    return loadDOM(getZipInputStream(zipStream, entryName));
-  }
-    
-  public static XMLDocument loadDOM(String resource) throws Exception
+  public static Constituents buildConstituents() throws Exception
   {
-    InputStream is = new FileInputStream(new File(resource));
-    return loadDOM(is);
-  }
-
-  public static XMLDocument loadDOM(InputStream resource) throws Exception 
-  {
-    XMLDocument doc = null;
-    try
-    {
-      synchronized (parser)
-      {
-        parser.parse(resource);
-        doc = parser.getDocument();
-      }
-    }
-    catch (Exception ex)
-    {
-      throw ex;
-    }
-    return doc;
-  }
-  
-  public static List<Coefficient> buildSiteConstSpeed(XMLDocument doc) throws Exception
-  {
-    List<Coefficient> csal = new ArrayList<Coefficient>();
-    String xPath = "//const-speed";
-    NodeList nl = doc.selectNodes(xPath);
-    for (int i=0; i<nl.getLength(); i++)
-    {
-      String name = ((XMLElement)nl.item(i)).selectNodes("./coeff-name").item(0).getFirstChild().getNodeValue();
-      double value = Double.parseDouble(((XMLElement)nl.item(i)).selectNodes("./coeff-value").item(0).getFirstChild().getNodeValue());
-      Coefficient coef = new Coefficient(name, value * TideUtilities.COEFF_FOR_EPOCH);
-      csal.add(coef);
-    }
-    return csal;
-  }
-  
-  public static double getAmplitudeFix(XMLDocument doc, int year, String name) throws Exception
-  {
-    double d = 0;
-    try
-    {
-      String xPath = "//const-speed[./coeff-name = '" + name + "']/node-factors/factor[./@year='" + Integer.toString(year) + "']";
-      NodeList nl = doc.selectNodes(xPath);
-      d = Double.parseDouble (((XMLElement)nl.item(0)).getFirstChild().getNodeValue());    
-    }
-    catch (Exception ex)
-    {
-      System.err.println("Error for [" + name + "] in [" + year + "]");
-      throw ex;
-    }
-    return d;
-  }
-  
-  public static double getEpochFix(XMLDocument doc, int year, String name) throws Exception
-  {
-    double d = 0;
-    try
-    {
-      String xPath = "//const-speed[./coeff-name = '" + name + "']/equilibrium-arguments/equilibrium[./@year='" + Integer.toString(year) + "']";
-      NodeList nl = doc.selectNodes(xPath);
-      d = Double.parseDouble (((XMLElement)nl.item(0)).getFirstChild().getNodeValue()) * TideUtilities.COEFF_FOR_EPOCH;    
-    }
-    catch (Exception ex)
-    {
-      System.err.println("Error for [" + name + "] in [" + year + "]");
-      throw ex;
-    }
-    return d;
-  }
-  
-  public static TideStation findTideStation(String stationName, int year, XMLDocument constituents) throws Exception
-  {
-    return findTideStation(stationName, year, constituents, RegenerateXMLData.getStationFileLocation());
-  }
-
-  public static InputStream getZipInputStream(String zipStream, String entryName) throws Exception
-  {
-    ZipInputStream zip = new ZipInputStream(BackEndXMLTideComputer.class.getResourceAsStream(zipStream));
-    InputStream is = null;
-    boolean go = true;
-    while (go)
-    {
-      ZipEntry ze = zip.getNextEntry();
-      if (ze == null)
-        go = false;
-      else
-      {
-        if (ze.getName().equals(entryName))
-        {
-          is = zip;
-          go = false;
-        }
-      }
-    }
-    if (is == null)
-    {
-      throw new RuntimeException("Entry " + entryName + " not found in " + zipStream.toString());
-    }
-    return is;    
-  }
-  
-  public static InputSource getZipInputSource(String zipStream, String entryName) throws Exception
-  {
-    ZipInputStream zip = new ZipInputStream(BackEndXMLTideComputer.class.getResourceAsStream(zipStream));
-    InputSource is = null;
-    boolean go = true;
-    while (go)
-    {
-      ZipEntry ze = zip.getNextEntry();
-      if (ze == null)
-        go = false;
-      else
-      {
-        if (ze.getName().equals(entryName))
-        {
-          is = new InputSource(zip);
-          is.setEncoding("ISO-8859-1");
-          go = false;
-        }
-      }
-    }
-    if (is == null)
-    {
-      throw new RuntimeException("Entry " + entryName + " not found in " + zipStream.toString());
-    }
-    return is;    
-  }
-  
-  public static TideStation findTideStation(String stationName, int year, XMLDocument constituents, String zipStream, String entryName) throws Exception
-  {
-    InputSource is = null;
-    try { is = getZipInputSource(zipStream, entryName); } catch (Exception ex) { throw new RuntimeException(ex); }
-    return findTideStation(stationName, year, constituents, is);
-    
-  }
-
-  public static TideStation findTideStation(String stationName, int year, XMLDocument constituents, String stationFile) throws Exception
-  {
-    InputSource is = new InputSource(new FileInputStream(new File(stationFile)));
-    is.setEncoding("ISO-8859-1");
-    return findTideStation(stationName, year, constituents, is);
-  }
-
-  public static TideStation findTideStation(String stationName, int year, XMLDocument constituents, InputSource is) throws Exception
-  {
-    TideStation ts = null;
+    SpeedConstituentFinder scf = new SpeedConstituentFinder();
     long before = System.currentTimeMillis();
-    StationFinder sf = new StationFinder();
     try
     {
       SAXParserFactory factory = SAXParserFactory.newInstance();
-      SAXParser saxParser = factory.newSAXParser();
-      
-      sf.setStationName(stationName);
-//    InputSource is = new InputSource(new FileInputStream(new File(stationFile)));
-//    is.setEncoding("ISO-8859-1");
-      saxParser.parse(is, sf);
-    }
-    catch (DoneWithSiteException dwse)
-    {
-      ts = sf.getTideStation();
-//    System.out.println("All right.");
+      SAXParser saxParser = factory.newSAXParser();      
+      InputSource is = BackEndTideComputer.getZipInputSource(ARCHIVE_STREAM, CONSTITUENTS_ENTRY);
+      saxParser.parse(is, scf);       
     }
     catch (Exception ex)
     {
       ex.printStackTrace();
     }
     long after = System.currentTimeMillis();
-    if (verbose) System.out.println("Finding the node took " + Long.toString(after - before) + " ms");
+    System.out.println("Constituents Objects built in " + Long.toString(after - before) + " ms.");  
+  
+    return scf.getConstituents();
+  }
     
-    // Fix for the given year
-//  System.out.println("We are in " + year);
-    // Correction to the Harmonics
-    for (Harmonic harm : ts.getHarmonics())
-    {
-      String name = harm.getName();
-      if (!"x".equals(name))
-      {
-        double amplitudeFix = getAmplitudeFix(constituents, year, name);
-        double epochFix     = getEpochFix(constituents, year, name);
-        
-        harm.setAmplitude(harm.getAmplitude() * amplitudeFix);
-        harm.setEpoch(harm.getEpoch() - epochFix);
-      }
-    }
-    if (verbose) System.out.println("Sites coefficients of [" + ts.getFullName() + "] fixed for " + year);
-    
-    return ts;
+  public static Stations getTideStations() throws Exception
+  {
+    return new Stations(getStationData());
   }
   
-  public static List<TideStation> getStationData() throws Exception
+  public static Map<String, TideStation> getStationData() throws Exception
   {
     long before = System.currentTimeMillis();
-    List<TideStation> stationData = new ArrayList<TideStation>();
+    Map<String, TideStation> stationData = new HashMap<String, TideStation>();
     StationFinder sf = new StationFinder(stationData);
     try
     {
       SAXParserFactory factory = SAXParserFactory.newInstance();
       SAXParser saxParser = factory.newSAXParser();      
-      InputSource is = // new InputSource(new FileInputStream(new File(STATION_FILE)));
-                       getZipInputSource(BackEndXMLTideComputer.ARCHIVE_STREAM, BackEndXMLTideComputer.STATIONS_ENTRY);
+      InputSource is = BackEndTideComputer.getZipInputSource(ARCHIVE_STREAM, STATIONS_ENTRY);
       saxParser.parse(is, sf);       
     }
     catch (Exception ex)
     {
       ex.printStackTrace();
+    }
+    long after = System.currentTimeMillis();
+    if (verbose) System.out.println("Finding all the stations took " + Long.toString(after - before) + " ms");
+    
+    return stationData;
+  }
+  
+  public static List<TideStation> getStationData(Stations stations) throws Exception
+  {
+    long before = System.currentTimeMillis();
+    List<TideStation> stationData = new ArrayList<TideStation>();
+    Set<String> keys = stations.getStations().keySet();
+    for (String k : keys)
+    {
+      try
+      {
+        stationData.add(stations.getStations().get(k));
+      }
+      catch (Exception ex)
+      {
+        ex.printStackTrace();
+      }
     }
     long after = System.currentTimeMillis();
     if (verbose) System.out.println("Finding all the stations took " + Long.toString(after - before) + " ms");
@@ -263,7 +102,7 @@ public class BackEndXMLTideComputer
   {
     private String stationName = "";
     private TideStation ts = null;
-    private List<TideStation> stationArrayList = null;
+    private Map<String, TideStation> stationArrayList = null;
     
     public void setStationName(String sn)
     {
@@ -274,7 +113,7 @@ public class BackEndXMLTideComputer
     {
     }
 
-    public StationFinder(List<TideStation> al)
+    public StationFinder(Map<String, TideStation> al)
     {
       this.stationArrayList = al;
     }
@@ -354,7 +193,7 @@ public class BackEndXMLTideComputer
         if (stationArrayList == null)
           throw new DoneWithSiteException("Done with it.");
         else
-          stationArrayList.add(ts);
+          stationArrayList.put(ts.getFullName(), ts);
       }
       else if (foundNameCollection && "name-collection".equals(qName))
       {
@@ -363,6 +202,129 @@ public class BackEndXMLTideComputer
       else if (foundStationData && "station-data".equals(qName))
       {
         foundStationData = false;
+      }
+    }
+  }
+  
+  public static class SpeedConstituentFinder extends DefaultHandler
+  {
+    private Constituents.ConstSpeed constituent = null;
+    private Constituents constituents = null;
+    
+    public SpeedConstituentFinder()
+    {
+      constituents = new Constituents();
+    }
+    
+    public Constituents getConstituents()
+    {
+      return constituents;
+    }
+
+    private boolean foundConstituent  = false;
+    private boolean foundCoeffName  = false;
+    private boolean foundCoeffValue  = false;
+
+    private boolean foundEquilibrium = false;
+    private boolean foundFactor      = false;
+    
+    private String coeffName = null;
+    private int coeffIdx = -1;
+    private double coeffValue = Double.NaN;
+    
+    private double value = 0D;
+    private int year = -1;
+    
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes)
+      throws SAXException
+    {
+  //  super.startElement(uri, localName, qName, attributes);
+      if (!foundConstituent && "const-speed".equals(qName))
+      {
+        foundConstituent = true;
+        coeffIdx = Integer.parseInt(attributes.getValue("idx"));
+      }
+      else if (foundConstituent && "coeff-name".equals(qName))
+      {
+        foundCoeffName = true;
+      }
+      else if (foundConstituent && "coeff-value".equals(qName))
+      {
+        foundCoeffValue = true;
+      }
+      else if (foundConstituent)
+      {
+        if ("equilibrium".equals(qName))
+        {
+          foundEquilibrium = true;
+          year = Integer.parseInt(attributes.getValue("year"));
+        }
+        else if ("factor".equals(qName))
+        {
+          foundFactor = true;
+          year = Integer.parseInt(attributes.getValue("year"));
+        }
+      }
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName)
+      throws SAXException
+    {
+      super.endElement(uri, localName, qName);
+      
+      if (coeffName != null && coeffIdx != -1 && !Double.isNaN(coeffValue))
+      {
+        constituent = new Constituents.ConstSpeed(coeffIdx, coeffName, coeffValue);        
+        coeffName = null;
+        coeffIdx = -1;
+        coeffValue = Double.NaN;        
+      }      
+      
+      if (foundConstituent && "const-speed".equals(qName))
+      {
+        foundConstituent = false;
+        coeffName = null;
+        coeffIdx = -1;
+        coeffValue = Double.NaN;
+        constituents.getConstSpeedMap().put(constituent.getCoeffName(), constituent);
+      }
+      else if ("coeff-name".equals(qName))
+      {
+        foundCoeffName = false;
+      }
+      else if ("coeff-value".equals(qName))
+      {
+        foundCoeffValue = false;
+      }
+      if ("equilibrium".equals(qName))
+      {
+        constituent.getEquilibrium().put(new Integer(year), value);
+        foundEquilibrium = false;
+      }
+      else if ("factor".equals(qName))
+      {
+        constituent.getFactors().put(new Integer(year), value);
+        foundFactor = false;
+      }
+    }
+
+    public void characters (char ch[], int start, int length)
+           throws SAXException
+    {
+      String str = new String(ch).substring(start, start + length).trim();
+      if (foundCoeffName)
+        coeffName = str;
+      else if (foundCoeffValue)
+        coeffValue = Double.parseDouble(str);
+      else if (foundEquilibrium)
+      {
+        value = Double.parseDouble(str);
+      }
+      else if (foundFactor)
+      {
+        value = Double.parseDouble(str);
       }
     }
   }
