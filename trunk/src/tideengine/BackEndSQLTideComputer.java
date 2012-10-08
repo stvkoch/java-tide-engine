@@ -3,22 +3,14 @@ package tideengine;
 
 import coreutilities.sql.SQLUtil;
 
-import java.io.File;
-import java.io.FileInputStream;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
 import java.util.ArrayList;
-
 import java.util.List;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.InputSource;
 
 /**
  * Uses Hypersonic SQL
@@ -204,13 +196,14 @@ public class BackEndSQLTideComputer
   
   public static void main(String[] args) throws Exception
   {
+    System.out.println("For tests, with " + args.length + " arg(s).");
     long before = System.currentTimeMillis();
     Connection conn = SQLUtil.getConnection("C:\\_mywork\\dev-corner\\olivsoft\\all-db", "TIDES", "tides", "tides");
     long after = System.currentTimeMillis();
     System.out.println("Connected in " + Long.toString(after - before) + " ms");
     System.out.println("----------------------");
     before = System.currentTimeMillis();
-    List<Coefficient> alc = buildSiteConstSpeed(conn);
+ /* List<Coefficient> alc = */ buildSiteConstSpeed(conn);
     after = System.currentTimeMillis();
     System.out.println("ArrayList generated in " + Long.toString(after - before) + " ms");
     System.out.println("----------------------");

@@ -1,10 +1,15 @@
 package tideengine;
 
+import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class TideStation
+public class TideStation implements Serializable
 {
+  @SuppressWarnings("compatibility:-6254376910797369528")
+  private final static long serialVersionUID = 1L;
+  
   public final static String METERS        = "meters";
   public final static String FEET          = "feet";
   public final static String KNOTS         = "knots";

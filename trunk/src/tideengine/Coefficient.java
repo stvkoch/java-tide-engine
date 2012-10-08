@@ -1,8 +1,12 @@
 package tideengine;
 
+import java.io.Serializable;
 
-public class Coefficient
+
+public class Coefficient implements Serializable
 {
+  @SuppressWarnings("compatibility:-3501902787423374405")
+  private final static long serialVersionUID = 1L;
   private String name = "";
   private double value = 0D;
 

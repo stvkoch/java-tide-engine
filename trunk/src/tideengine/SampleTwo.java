@@ -111,6 +111,8 @@ public class SampleTwo
           cal.set(Calendar.HOUR_OF_DAY, h);
           cal.set(Calendar.MINUTE, m);
           double wh = TideUtilities.getWaterHeight(ts, constSpeed, cal);
+//        double wh = TideUtilities.getWaterHeight(ts, BackEndTideComputer.getConstituents(), cal);
+  
           if (Double.isNaN(previousWH))
             previousWH = wh;
           else

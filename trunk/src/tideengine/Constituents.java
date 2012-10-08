@@ -1,15 +1,16 @@
-package tideengine.serialized;
+package tideengine;
 
 import java.io.Serializable;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Constituents extends TideDataObject implements Serializable
+public class Constituents implements Serializable
 {
-  @SuppressWarnings("compatibility:2145474960542046771")
+  @SuppressWarnings("compatibility:-3247726694844411850")
   private final static long serialVersionUID = 1L;
-  private Map<String, ConstSpeed> constSpeedMap = new HashMap<String, ConstSpeed>();
+  private Map<String, ConstSpeed> constSpeedMap = new LinkedHashMap<String, ConstSpeed>();
   
   public Map<String, ConstSpeed> getConstSpeedMap()
   {
@@ -24,8 +25,8 @@ public class Constituents extends TideDataObject implements Serializable
     private int idx = 0;
     private String coeffName = "";
     private double coeffValue = 0d;
-    private Map<Integer, Float> equilibrium = new HashMap<Integer, Float>();
-    private Map<Integer, Float> factors     = new HashMap<Integer, Float>();
+    private Map<Integer, Double> equilibrium = new HashMap<Integer, Double>();
+    private Map<Integer, Double> factors     = new HashMap<Integer, Double>();
     
     public ConstSpeed(int idx, String name, double val)
     {
@@ -34,13 +35,13 @@ public class Constituents extends TideDataObject implements Serializable
       this.coeffValue = val;
     }
     
-    public void putEquilibrium(int year, float val)
+    public void putEquilibrium(int year, double val)
     {
-      equilibrium.put(new Integer(year), new Float(val));
+      equilibrium.put(new Integer(year), new Double(val));
     }
-    public void putFactor(int year, float val)
+    public void putFactor(int year, double val)
     {
-      factors.put(new Integer(year), new Float(val));
+      factors.put(new Integer(year), new Double(val));
     }
 
     public String getCoeffName()
@@ -53,12 +54,12 @@ public class Constituents extends TideDataObject implements Serializable
       return coeffValue;
     }
 
-    public Map<Integer, Float> getEquilibrium()
+    public Map<Integer, Double> getEquilibrium()
     {
       return equilibrium;
     }
 
-    public Map<Integer, Float> getFactors()
+    public Map<Integer, Double> getFactors()
     {
       return factors;
     }
