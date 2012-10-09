@@ -1,4 +1,4 @@
-package tideengine;
+package tideengine.tests;
 
 
 import java.text.SimpleDateFormat;
@@ -10,6 +10,12 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.TreeMap;
+
+import tideengine.BackEndTideComputer;
+import tideengine.Coefficient;
+import tideengine.RegenerateXMLData;
+import tideengine.TideStation;
+import tideengine.TideUtilities;
 
 
 public class SampleMain
@@ -35,7 +41,8 @@ public class SampleMain
   //    String harmonicName1 = "harmonics-dwf-20110410-free.txt";
   //    String harmonicName2 = "harmonics-dwf-20110410-nonfree.txt";
         long before = System.currentTimeMillis();
-        try { RegenerateXMLData.generateXML(harmonicName); } catch (Exception ex) { ex.printStackTrace(); }
+        try {
+          RegenerateXMLData.generateXML(harmonicName); } catch (Exception ex) { ex.printStackTrace(); }
         long after = System.currentTimeMillis();
         System.out.println("It took " + Long.toString(after - before) + " ms to rebuild the XML files.");
       }
@@ -432,7 +439,7 @@ public class SampleMain
       if (false)
       {
         System.out.println("-- Building Station Tree");
-     /* TreeMap<String, TideUtilities.StationTreeNode> stationTree = */ TideUtilities.buildStationTree();
+     /* TreeMap<String, TideUtilities.StationTreeNode> stationTree = */TideUtilities.buildStationTree();
         System.out.println("Done");
       }
       BackEndTideComputer.disconnect();

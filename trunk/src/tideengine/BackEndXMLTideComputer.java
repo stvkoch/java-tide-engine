@@ -26,7 +26,6 @@ public class BackEndXMLTideComputer
   public static Constituents buildConstituents() throws Exception
   {
     SpeedConstituentFinder scf = new SpeedConstituentFinder();
-    long before = System.currentTimeMillis();
     try
     {
       SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -38,9 +37,6 @@ public class BackEndXMLTideComputer
     {
       ex.printStackTrace();
     }
-    long after = System.currentTimeMillis();
-    System.out.println("Constituents Objects built in " + Long.toString(after - before) + " ms.");  
-  
     return scf.getConstituents();
   }
     
@@ -51,7 +47,6 @@ public class BackEndXMLTideComputer
   
   public static Map<String, TideStation> getStationData() throws Exception
   {
-    long before = System.currentTimeMillis();
     Map<String, TideStation> stationData = new HashMap<String, TideStation>();
     StationFinder sf = new StationFinder(stationData);
     try
@@ -65,8 +60,6 @@ public class BackEndXMLTideComputer
     {
       ex.printStackTrace();
     }
-    long after = System.currentTimeMillis();
-    if (verbose) System.out.println("Finding all the stations took " + Long.toString(after - before) + " ms");
     
     return stationData;
   }
@@ -102,7 +95,7 @@ public class BackEndXMLTideComputer
   {
     private String stationName = "";
     private TideStation ts = null;
-    private Map<String, TideStation> stationArrayList = null;
+    private Map<String, TideStation> stationMap = null;
     
     public void setStationName(String sn)
     {
@@ -113,9 +106,9 @@ public class BackEndXMLTideComputer
     {
     }
 
-    public StationFinder(Map<String, TideStation> al)
+    public StationFinder(Map<String, TideStation> map)
     {
-      this.stationArrayList = al;
+      this.stationMap = map;
     }
     
     public TideStation getTideStation()
@@ -190,10 +183,10 @@ public class BackEndXMLTideComputer
       if (foundStation && "station".equals(qName))
       {
         foundStation = false;
-        if (stationArrayList == null)
+        if (stationMap == null)
           throw new DoneWithSiteException("Done with it.");
         else
-          stationArrayList.put(ts.getFullName(), ts);
+          stationMap.put(ts.getFullName(), ts);
       }
       else if (foundNameCollection && "name-collection".equals(qName))
       {

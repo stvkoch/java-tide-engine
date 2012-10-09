@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -49,7 +50,7 @@ public class TideUtilities
   public final static DecimalFormat DF13    = new DecimalFormat("##0.000");
   public final static DecimalFormat DF36    = new DecimalFormat("##0.000000");
 
-  public final static HashMap<String, String> COEFF_DEFINITION = new HashMap<String, String>();
+  public final static Map<String, String> COEFF_DEFINITION = new HashMap<String, String>();
   static
   {
     COEFF_DEFINITION.put("M2",   "Principal lunar semidiurnal constituent");

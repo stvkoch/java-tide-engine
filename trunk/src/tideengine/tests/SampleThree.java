@@ -1,4 +1,4 @@
-package tideengine;
+package tideengine.tests;
 
 
 import java.text.SimpleDateFormat;
@@ -16,6 +16,12 @@ import org.fusesource.jansi.AnsiConsole;
 import static org.fusesource.jansi.Ansi.*;
 import static org.fusesource.jansi.Ansi.Color.*;
 
+import tideengine.BackEndTideComputer;
+import tideengine.Coefficient;
+import tideengine.Harmonic;
+import tideengine.TideStation;
+import tideengine.TideUtilities;
+
 
 public class SampleThree
 {
@@ -30,7 +36,7 @@ public class SampleThree
 //  System.out.println( ansi().bg(CYAN).fg(RED).bold().a("Hello").fg(GREEN).a(" World").reset() );
     System.out.println(ansi().fg(WHITE).bold().a(Integer.toString(args.length)).reset().a(" Argument(s)...").reset());
 
-    System.out.println(ansi().fg(GREEN).a("Java Serialization Tests").reset());    
+    System.out.println(ansi().fg(GREEN).a("Java Serialization Tests").reset());
     BackEndTideComputer.setVerbose(true);
     BackEndTideComputer.connect(BackEndTideComputer.JAVA_SERIALIZED_OPTION);
     
