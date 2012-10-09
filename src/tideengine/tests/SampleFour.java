@@ -1,4 +1,4 @@
-package tideengine;
+package tideengine.tests;
 
 
 import java.text.SimpleDateFormat;
@@ -12,12 +12,20 @@ import java.util.TimeZone;
 
 import java.util.TreeMap;
 
+import static org.fusesource.jansi.Ansi.*;
+import static org.fusesource.jansi.Ansi.Color.*;
 import org.fusesource.jansi.AnsiConsole;
 import static org.fusesource.jansi.Ansi.*;
 import static org.fusesource.jansi.Ansi.Color.*;
 
+import tideengine.BackEndTideComputer;
+import tideengine.Coefficient;
+import tideengine.Harmonic;
+import tideengine.TideStation;
+import tideengine.TideUtilities;
 
-public class SampleTwo
+
+public class SampleFour
 {
   private final static SimpleDateFormat SDF_FULL = new SimpleDateFormat("yyyy-MMM-dd HH:mm z (Z)");
 //private final static SimpleDateFormat SDF      = new SimpleDateFormat("yyyy-MMM-dd HH:mm");
@@ -30,11 +38,11 @@ public class SampleTwo
 //  System.out.println( ansi().bg(CYAN).fg(RED).bold().a("Hello").fg(GREEN).a(" World").reset() );
     System.out.println(ansi().fg(WHITE).bold().a(Integer.toString(args.length)).reset().a(" Argument(s)...").reset());
 
-    System.out.println(ansi().fg(GREEN).a("XML Tests").reset());
-    BackEndTideComputer.connect(BackEndTideComputer.XML_OPTION);
+    System.out.println(ansi().fg(GREEN).a("JSON Serialization Tests").reset());
     BackEndTideComputer.setVerbose(true);
+    BackEndTideComputer.connect(BackEndTideComputer.JSON_SERIALIZED_OPTION);
     
-    List<Coefficient> constSpeed = BackEndTideComputer.buildSiteConstSpeed();
+    List<Coefficient> constSpeed = BackEndTideComputer.buildSiteConstSpeed(); 
 
     System.out.println(ansi().fg(YELLOW));
     System.out.println("SpeedCoefficients OK");
@@ -52,7 +60,7 @@ public class SampleTwo
       System.out.println("-- Building Station Tree");
       TreeMap<String, TideUtilities.StationTreeNode> stationTree = BackEndTideComputer.buildStationTree();
       System.out.println(stationTree.size() + " station(s) in the tree (level one)");
-    //    TideUtilities.renderTree(stationTree, 0);
+//    TideUtilities.renderTree(stationTree, 0);
       System.out.println("Done");
     }
 
@@ -111,8 +119,6 @@ public class SampleTwo
           cal.set(Calendar.HOUR_OF_DAY, h);
           cal.set(Calendar.MINUTE, m);
           double wh = TideUtilities.getWaterHeight(ts, constSpeed, cal);
-//        double wh = TideUtilities.getWaterHeight(ts, BackEndTideComputer.getConstituents(), cal);
-  
           if (Double.isNaN(previousWH))
             previousWH = wh;
           else

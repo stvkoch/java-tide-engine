@@ -69,6 +69,7 @@ public class BackEndTideComputer
   
   public static void connect(int option) throws Exception
   {
+    long before = 0L, after = 0L;
     CHOSEN_OPTION = option;
     switch (CHOSEN_OPTION)
     {
@@ -103,15 +104,34 @@ public class BackEndTideComputer
         }
         break;
       case XML_OPTION:
-        constituentsObject = BackEndXMLTideComputer.buildConstituents();
-        stationsObject = BackEndXMLTideComputer.getTideStations();
+        BackEndXMLTideComputer.setVerbose(verbose);
+        if (verbose)
+          before = System.currentTimeMillis();
+        constituentsObject = BackEndXMLTideComputer.buildConstituents(); // Uses SAX
+        stationsObject = BackEndXMLTideComputer.getTideStations();       // Uses SAX
+        if (verbose)
+        {
+          after = System.currentTimeMillis();
+          System.out.println("Objects loaded in " + Long.toString(after - before) + " ms");
+        }
         break;
       case JAVA_SERIALIZED_OPTION:
+        BackEndSerializedTideComputer.setVerbose(verbose);
+        if (verbose)
+          before = System.currentTimeMillis();
         BackEndSerializedTideComputer.setSerializationFlavor(BackEndSerializedTideComputer.JAVA_SERIALIZATION_FLAVOR);
         constituentsObject = BackEndSerializedTideComputer.loadObject(BackEndSerializedTideComputer.SER_ARCHIVE_STREAM, BackEndSerializedTideComputer.SER_CONSTITUENTS_ENTRY, Constituents.class);
         stationsObject = BackEndSerializedTideComputer.loadObject(BackEndSerializedTideComputer.SER_ARCHIVE_STREAM, BackEndSerializedTideComputer.SER_STATIONS_ENTRY, Stations.class);
+        if (verbose)
+        {
+          after = System.currentTimeMillis();
+          System.out.println("Objects loaded in " + Long.toString(after - before) + " ms");
+        }
         break;
       case JSON_SERIALIZED_OPTION:
+        BackEndSerializedTideComputer.setVerbose(verbose);
+        if (verbose)
+          before = System.currentTimeMillis();
         BackEndSerializedTideComputer.setSerializationFlavor(BackEndSerializedTideComputer.JSON_SERIALIZATION_FLAVOR);        
         constituentsObject = BackEndSerializedTideComputer.loadObject(BackEndSerializedTideComputer.JSON_ARCHIVE_STREAM, BackEndSerializedTideComputer.JSON_CONSTITUENTS_ENTRY, Constituents.class);
         boolean v2 = false;
@@ -140,6 +160,11 @@ public class BackEndTideComputer
               ex.printStackTrace();
             }
           }
+        }
+        if (verbose)
+        {
+          after = System.currentTimeMillis();
+          System.out.println("Objects loaded in " + Long.toString(after - before) + " ms");
         }
         break;
     }

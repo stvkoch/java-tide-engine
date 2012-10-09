@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Constituents implements Serializable
 {
-  @SuppressWarnings("compatibility:-3247726694844411850")
+  @SuppressWarnings("compatibility:9177290185319880922")
   private final static long serialVersionUID = 1L;
   private Map<String, ConstSpeed> constSpeedMap = new LinkedHashMap<String, ConstSpeed>();
   
@@ -19,7 +19,7 @@ public class Constituents implements Serializable
     
   public static class ConstSpeed implements Serializable
   {
-    @SuppressWarnings("compatibility:7961834886107806402")
+    @SuppressWarnings("compatibility:-5425660072213952784")
     private final static long serialVersionUID = 1L;
 
     private int idx = 0;
