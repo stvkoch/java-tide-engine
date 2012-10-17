@@ -86,6 +86,28 @@ public class BackEndXMLTideComputer
     return stationData;
   }
   
+  public static TideStation reloadOneStation(String stationName) throws Exception
+  {
+    StationFinder sf = new StationFinder();
+    sf.setStationName(stationName);
+    try
+    {
+      SAXParserFactory factory = SAXParserFactory.newInstance();
+      SAXParser saxParser = factory.newSAXParser();      
+      InputSource is = BackEndTideComputer.getZipInputSource(ARCHIVE_STREAM, STATIONS_ENTRY);
+      saxParser.parse(is, sf);       
+    }
+    catch (DoneWithSiteException dwse)
+    {
+      System.err.println(dwse.getLocalizedMessage());
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+    }
+    return sf.getTideStation();
+  }
+  
   public static void setVerbose(boolean verbose)
   {
     BackEndXMLTideComputer.verbose = verbose;

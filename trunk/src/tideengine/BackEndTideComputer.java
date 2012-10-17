@@ -390,27 +390,82 @@ public class BackEndTideComputer
   {
     long before = System.currentTimeMillis();
     TideStation station = stations.getStations().get(stationName);
+    if (station == null) // Try match
+    {
+      Set<String> keys = stations.getStations().keySet();
+      for (String s : keys)
+      {
+        if (s.contains(stationName))
+        {
+          station = stations.getStations().get(s);
+          if (station != null)
+            break;
+        }
+      }
+    }
     long after = System.currentTimeMillis();
     if (verbose) System.out.println("Finding the node took " + Long.toString(after - before) + " ms");
     
     // Fix for the given year
-  //  System.out.println("We are in " + year);
-    // Correction to the Harmonics
-    for (Harmonic harm : station.getHarmonics())
+//  System.out.println("findTideStation: We are in " + year + ", coeff fixed for " + station.yearHarmonicsFixed());
+    if (station != null && station.yearHarmonicsFixed() != -1 && station.yearHarmonicsFixed() != year) // Then reload station data from source
     {
-      String name = harm.getName();
-      if (!"x".equals(name))
+      System.out.println("Reloading Station Data for corrections in year " + year);
+      try
       {
-        double amplitudeFix = getAmplitudeFix(constituents, year, name);
-        double epochFix     = getEpochFix(constituents, year, name);
-        
-        harm.setAmplitude(harm.getAmplitude() * amplitudeFix);
-        harm.setEpoch(harm.getEpoch() - epochFix);
+        TideStation newTs = reloadTideStation(station.getFullName());
+        stations.getStations().put(station.getFullName(), newTs);
+        station = newTs;
       }
+      catch (Exception ex)
+      {
+        ex.printStackTrace();
+      }                   
     }
-    if (verbose) System.out.println("Sites coefficients of [" + station.getFullName() + "] fixed for " + year);
-    
+    // Correction to the Harmonics
+    if (station.yearHarmonicsFixed() == -1)
+    {
+      for (Harmonic harm : station.getHarmonics())
+      {
+        String name = harm.getName();
+        if (!"x".equals(name))
+        {
+          double amplitudeFix = getAmplitudeFix(constituents, year, name);
+          double epochFix     = getEpochFix(constituents, year, name);
+          
+          harm.setAmplitude(harm.getAmplitude() * amplitudeFix);
+          harm.setEpoch(harm.getEpoch() - epochFix);
+  
+  //      System.out.println(stationName + ": Amplitude Fix for " + name + " in " + year + " is " + amplitudeFix + " (->" + harm.getAmplitude() + ")");
+  //      System.out.println(stationName + ": Epoch Fix for " + name + " in " + year + " is " + epochFix + " (->" + harm.getEpoch() + ")");
+        }
+      }
+      station.setHarmonicsFixedForYear(year);
+      if (verbose) 
+        System.out.println("Sites coefficients of [" + station.getFullName() + "] fixed for " + year);
+    }
+    else if (verbose) 
+      System.out.println("Coefficients already fixed for " + year);
     return station;
+  }
+  
+  // TODO Other flavors
+  private static TideStation reloadTideStation(String stationName) throws Exception
+  {
+    TideStation ts = null;
+    switch (CHOSEN_OPTION)
+    {
+      case SQL_OPTION:
+      case SQLITE_OPTION:
+        break;
+      case XML_OPTION:
+        ts = BackEndXMLTideComputer.reloadOneStation(stationName);
+        break;
+      case JAVA_SERIALIZED_OPTION:
+      case JSON_SERIALIZED_OPTION:
+        break;
+    }      
+    return ts;
   }
   
   public static List<TideStation> getStationData(Stations stations) throws Exception

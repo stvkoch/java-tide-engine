@@ -7,7 +7,7 @@ import java.util.List;
 
 public class TideStation implements Serializable
 {
-  @SuppressWarnings("compatibility:-6254376910797369528")
+  @SuppressWarnings("compatibility:388041214676602538")
   private final static long serialVersionUID = 1L;
   
   public final static String METERS        = "meters";
@@ -24,6 +24,8 @@ public class TideStation implements Serializable
   private String timeZone = "";
   private String timeOffset = "";
   private List<Harmonic> harmonics = new ArrayList<Harmonic>();
+  
+  private int harmonicsHaveBeenFixedForYear = -1;
 
   public void setFullName(String fullName)
   {
@@ -121,5 +123,15 @@ public class TideStation implements Serializable
       return KNOTS;
     else
       return unit;
+  }
+
+  public void setHarmonicsFixedForYear(int y)
+  {
+    this.harmonicsHaveBeenFixedForYear = y;
+  }
+
+  public int yearHarmonicsFixed()
+  {
+    return harmonicsHaveBeenFixedForYear;
   }
 }

@@ -237,7 +237,45 @@ public class TideUtilities
     return d / FEET_2_METERS;  
   }
 
+  public static double getWaterHeight(TideStation ts, List<Coefficient> constSpeed, Calendar when) throws Exception
+  {
+    double wh = 0d;
+    if (ts != null)
+    {      
+      // Calculate min/max, for the graph
+      int year = when.get(Calendar.YEAR); 
+      // Calc Jan 1st of the current year
+      Calendar jan1st = null;
+      if (false)
+        jan1st = new GregorianCalendar(year, Calendar.JANUARY, 1);
+      else
+      {
+        jan1st = new GregorianCalendar();
+        jan1st.setTimeZone(TimeZone.getTimeZone(ts.getTimeZone()));
+//      jan1st.setTimeZone(TimeZone.getTimeZone("Etc/UTC"));
+        jan1st.set(Calendar.YEAR, year);
+        jan1st.set(Calendar.MONTH, Calendar.JANUARY);
+        jan1st.set(Calendar.DAY_OF_MONTH, 1);
+        jan1st.set(Calendar.HOUR_OF_DAY, 0);
+        jan1st.set(Calendar.MINUTE, 0);
+        jan1st.set(Calendar.SECOND, 0);
+        jan1st.set(Calendar.MILLISECOND, 0);
+      }
+      wh = getWaterHeight(when, jan1st, ts, constSpeed, true);
+//    System.out.println("Water Height in " + ts.getFullName() + " on " + when.toString() + " is " + DF22.format(wh) + " " + ts.getUnit());
+    }
+    else
+      if (verbose) System.out.println("Ooch!");    
+    
+    return wh;
+  }
+  
   public static double getWaterHeight(Calendar d, Calendar jan1st, TideStation ts, List<Coefficient> constSpeed)
+  {
+    return getWaterHeight(d, jan1st, ts, constSpeed, false);
+  }
+
+  public static double getWaterHeight(Calendar d, Calendar jan1st, TideStation ts, List<Coefficient> constSpeed, boolean b)
   {
     double value = 0d;
     
@@ -249,13 +287,16 @@ public class TideUtilities
     value = stationBaseHeight;
     for (int i=0; i<constSpeed.size(); i++)
     {
-      assert(ts.getHarmonics().get(i).getName().equals(constSpeed.get(i).getName()));
-      
+      assert(ts.getHarmonics().get(i).getName().equals(constSpeed.get(i).getName()));      
       if (!ts.getHarmonics().get(i).getName().equals(constSpeed.get(i).getName()))
         System.out.println("..... Mismatch!!!");
+      
       value += (ts.getHarmonics().get(i).getAmplitude() * Math.cos(constSpeed.get(i).getValue() * timeOffset - ts.getHarmonics().get(i).getEpoch()));
-      if (verbose)
-        System.out.println("Coefficient:" + ts.getHarmonics().get(i).getName() + " ampl:" + ts.getHarmonics().get(i).getAmplitude() + ", epoch:" + ts.getHarmonics().get(i).getEpoch());
+//    if (b && 
+//        d.get(Calendar.MINUTE) == 0 && 
+//        d.get(Calendar.HOUR_OF_DAY) == 0 &&
+//        "J1".equals(ts.getHarmonics().get(i).getName()))
+//      System.out.println("TS Coefficient:" + ts.getHarmonics().get(i).getName() + " ampl:" + ts.getHarmonics().get(i).getAmplitude() + ", epoch:" + ts.getHarmonics().get(i).getEpoch() + ", timeOffset:" + timeOffset + " value:" + value + ", Date:" + d.getTime().toString());
     }
     if (verbose) System.out.println("-----------------------------");
     if (ts.getUnit().indexOf("^2") > -1)
@@ -341,38 +382,6 @@ public class TideUtilities
     if (!found)
       System.out.println("Coeff [" + name + "] not found.");
     return (found?idx:-1);
-  }
-  
-  public static double getWaterHeight(TideStation ts, List<Coefficient> constSpeed, Calendar when) throws Exception
-  {
-    double wh = 0d;
-    if (ts != null)
-    {      
-      // Calculate min/max, for the graph
-      int year = when.get(Calendar.YEAR); 
-      // Calc Jan 1st of the current year
-      Calendar jan1st = null;
-      if (false)
-        jan1st = new GregorianCalendar(year, Calendar.JANUARY, 1);
-      else
-      {
-        jan1st = new GregorianCalendar();
-        jan1st.setTimeZone(TimeZone.getTimeZone(ts.getTimeZone()));
-        jan1st.set(Calendar.YEAR, year);
-        jan1st.set(Calendar.MONTH, Calendar.JANUARY);
-        jan1st.set(Calendar.DAY_OF_MONTH, 1);
-        jan1st.set(Calendar.HOUR_OF_DAY, 0);
-        jan1st.set(Calendar.MINUTE, 0);
-        jan1st.set(Calendar.SECOND, 0);
-        jan1st.set(Calendar.MILLISECOND, 0);
-      }
-      wh = getWaterHeight(when, jan1st, ts, constSpeed);
-//    System.out.println("Water Height in " + ts.getFullName() + " on " + now.toString() + " is " + DF22.format(wh) + " " + ts.getUnit());
-    }
-    else
-      if (verbose) System.out.println("Ooch!");    
-    
-    return wh;
   }
   
   public final static int MIN_POS = 0;
