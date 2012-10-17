@@ -79,7 +79,7 @@ public class SampleMain
         }
         if (true)
         {
-          location = "Fare Ute";
+          location = "Fare Ute Point";
           ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR));
           if (ts != null)
           {
@@ -88,7 +88,7 @@ public class SampleMain
             System.out.println((ts.isTideStation()?"Water Height":"Current Speed") + " in " + location + " at " + now.getTime().toString() + " : " + TideUtilities.DF22PLUS.format(wh) + " " + ts.getDisplayUnit());
           }
     
-          location = "Oyster Point Marina";
+          location = "Oyster Point Marina, San Francisco Bay, California";
           ts = BackEndTideComputer.findTideStation(location, now.get(Calendar.YEAR));
           if (ts != null)
           {
