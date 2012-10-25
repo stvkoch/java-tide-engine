@@ -134,4 +134,10 @@ public class TideStation implements Serializable
   {
     return harmonicsHaveBeenFixedForYear;
   }
+  
+  @Override
+  public String toString()
+  {
+    return this.getFullName();
+  }
 }
