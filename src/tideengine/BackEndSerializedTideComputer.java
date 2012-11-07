@@ -49,7 +49,8 @@ public class BackEndSerializedTideComputer
       if (serializationFlavor == JAVA_SERIALIZATION_FLAVOR)
       {
         ObjectInputStream ois = new ObjectInputStream(resource);
-        tideObject = (T) ois.readObject();
+        Object readObject = ois.readObject();
+        tideObject = (T)readObject;
         ois.close();
       }
       else if (serializationFlavor == JSON_SERIALIZATION_FLAVOR)
