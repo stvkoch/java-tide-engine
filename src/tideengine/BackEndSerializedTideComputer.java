@@ -50,7 +50,7 @@ public class BackEndSerializedTideComputer
       {
         ObjectInputStream ois = new ObjectInputStream(resource);
         Object readObject = ois.readObject();
-        tideObject = (T)readObject;
+        tideObject = cl.cast(readObject); // This prevents the unchecked cast at compile time.
         ois.close();
       }
       else if (serializationFlavor == JSON_SERIALIZATION_FLAVOR)
