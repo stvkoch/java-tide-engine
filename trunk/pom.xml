@@ -26,16 +26,6 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>hsql</groupId>
-      <artifactId>db</artifactId>
-      <version>1.8.0</version>
-    </dependency>
-    <dependency>
-      <groupId>jansi</groupId>
-      <artifactId>ansi</artifactId>
-      <version>1.9</version>
-    </dependency>
-    <dependency>
       <groupId>CoreUtilities</groupId>
       <artifactId>CoreUtilities</artifactId>
       <version>1.0</version>

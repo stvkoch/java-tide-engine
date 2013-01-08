@@ -3,10 +3,6 @@ package tideengine;
 import java.io.File;
 import java.io.FileInputStream;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
 import java.text.DecimalFormat;
 
 import java.util.ArrayList;
@@ -103,11 +99,6 @@ public class TideUtilities
     return ORDERED_COEFF.clone();  
   }
   
-  public static TreeMap<String, StationTreeNode> buildStationTree()
-  {
-    return buildStationTree(RegenerateXMLData.STATION_FILE);
-  }
-  
   public static TreeMap<String, StationTreeNode> buildStationTree(String stationFileName)
   {
     InputSource is = null;
@@ -146,44 +137,6 @@ public class TideUtilities
     return set;
   }
   
-  public static TreeMap<String, StationTreeNode> buildStationTree(Connection conn) 
-  {
-    TreeMap<String, StationTreeNode> set = new TreeMap<String, StationTreeNode>();
-    String stationQuery = "select name, latitude, longitude, tzoffset, tzname, baseheightvalue, baseheightunit from stations";
-    
-    long before = System.currentTimeMillis();
-    try
-    {
-      Statement stmt = conn.createStatement();
-      ResultSet rs = stmt.executeQuery(stationQuery);
-      while (rs.next())
-      {
-        TideStation ts = new TideStation();
-        ts.setFullName(rs.getString(1));
-        ts.setLatitude(rs.getDouble(2));
-        ts.setLongitude(rs.getDouble(3));
-        ts.setTimeOffset(rs.getString(4));
-        ts.setTimeZone(rs.getString(5));
-        ts.setBaseHeight(rs.getDouble(6));
-        ts.setUnit(rs.getString(7));
-        String[] np = ts.getFullName().split(",");
-        for (int i=0; i<np.length; i++)
-          ts.getNameParts().add(np[(np.length - 1) - i]);
-        addStationToTree(ts, set);
-      }
-      rs.close();
-      stmt.close();
-    }
-    catch (Exception ex)
-    {
-      ex.printStackTrace();
-    }
-    long after = System.currentTimeMillis();
-    if (verbose) System.out.println("Populating the tree took " + Long.toString(after - before) + " ms");
-    
-    return set;
-  }
-
   public static TreeMap<String, StationTreeNode> buildStationTree(Stations stations) 
   {
     TreeMap<String, StationTreeNode> set = new TreeMap<String, StationTreeNode>();
@@ -579,6 +532,11 @@ public class TideUtilities
     {
       return stationType;
     }
+    
+    public boolean equals(Object o)
+    {
+      return (o instanceof StationTreeNode && this.compareTo(o) == 0);
+    }
   }
 
   public static class StationObserver extends DefaultHandler
@@ -652,10 +610,4 @@ public class TideUtilities
     }
   }
 
-      
-  public static void main(String[] args)
-  {
-    TreeMap<String, StationTreeNode> tree = buildStationTree();
-    renderTree(tree, 0);    
-  }
 }
